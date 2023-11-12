@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,6 +53,9 @@ fun MetronomeHomeScreen(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
+                onTrackListButtonClicked = {
+                    navController.navigate(MetronomeScreen.TrackPicker.name)
+                },
                 onSettingsButtonClicked = {
                     navController.navigate(MetronomeScreen.Settings.name)
                 },
@@ -70,6 +74,27 @@ fun MetronomeHomeScreen(
                 composable(route = MetronomeScreen.Settings.name) {
                     SettingsScreen()
                 }
+                composable(route = MetronomeScreen.TrackPicker.name) {
+                    TrackPickerScreen(
+                        tracks = testTracks, // TODO: use tracks from DB here instead
+                        onCreateTrackButtonClicked = {
+                            navController.navigate(MetronomeScreen.TrackCreator.name)
+                        },
+                        onSearchTrackButtonClicked = {
+                            navController.navigate(MetronomeScreen.TrackSearcher.name)
+                        },
+                        onTrackPicked = {
+                            navController.navigateUp()
+                            // TODO: use picked track to update metronome state here
+                        }
+                    )
+                }
+                composable(route = MetronomeScreen.TrackCreator.name) {
+
+                }
+                composable(route = MetronomeScreen.TrackSearcher.name) {
+
+                }
             }
         }
     )
@@ -85,7 +110,7 @@ private fun HomeScreen(
         BpmPicker(
             bpm = metronomeConfig.bpm,
             onBpmChanged = {
-                // TODO
+                // TODO: implement me
             },
             modifier = Modifier.padding(8.dp)
         )
@@ -93,14 +118,14 @@ private fun HomeScreen(
             TimeSignaturePicker(
                 timeSignature = metronomeConfig.timeSignature,
                 onTimeSignaturePicked = {
-                    // TODO
+                    // TODO: implement me
                 }
             )
             Spacer(modifier = Modifier.height(20.dp))
             NotePicker(
                 noteValue = metronomeConfig.noteValue,
                 onNoteValuePicked = {
-                    // TODO
+                    // TODO: implement me
                 }
             )
         }
@@ -113,6 +138,7 @@ private fun MetronomeAppBar(
     currentScreen: MetronomeScreen,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
+    onTrackListButtonClicked: () -> Unit,
     onSettingsButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -131,6 +157,12 @@ private fun MetronomeAppBar(
         },
         actions = {
             if (currentScreen == MetronomeScreen.Home) {
+                IconButton(onClick = onTrackListButtonClicked) {
+                    Icon(
+                        imageVector = Icons.Filled.List,
+                        contentDescription = stringResource(id = R.string.track_list_button)
+                    )
+                }
                 IconButton(onClick = onSettingsButtonClicked) {
                     Icon(
                         imageVector = Icons.Filled.Settings,

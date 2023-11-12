@@ -7,5 +7,9 @@
     <string name="settings">Settings</string>
 
     <string name="back_button">Go Back</string>
+    <string name="track_list_button">Open track list</string>
     <string name="settings_button">Settings</string>
+    <string name="search_track_button">Search for a track</string>
+    <string name="create_new_track_button">Create a new track</string>
+    <string name="pick_track_to_play_button">Pick this track to play</string>
 </resources>
