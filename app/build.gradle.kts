@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
 }
 
 android {
@@ -40,7 +41,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
     packaging {
         resources {
@@ -71,6 +72,12 @@ dependencies {
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Room
+    val roomVersion = "2.6.0"
+    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

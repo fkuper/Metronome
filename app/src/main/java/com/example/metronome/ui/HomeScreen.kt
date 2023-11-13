@@ -32,13 +32,14 @@ import com.example.metronome.R
 import com.example.metronome.ui.components.BpmPicker
 import com.example.metronome.ui.components.NotePicker
 import com.example.metronome.ui.components.TimeSignaturePicker
+import com.example.metronome.ui.tracks.TrackPickerScreen
 import com.example.metronome.utils.MetronomeConfig
 import com.example.metronome.utils.MetronomeScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MetronomeHomeScreen(
-    viewModel: HomeScreenViewModel = viewModel(),
+    viewModel: HomeScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController(),
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -76,7 +77,6 @@ fun MetronomeHomeScreen(
                 }
                 composable(route = MetronomeScreen.TrackPicker.name) {
                     TrackPickerScreen(
-                        tracks = testTracks, // TODO: use tracks from DB here instead
                         onCreateTrackButtonClicked = {
                             navController.navigate(MetronomeScreen.TrackCreator.name)
                         },
