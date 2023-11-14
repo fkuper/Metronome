@@ -35,6 +35,7 @@ import com.example.metronome.utils.MetronomeScreen
 @Composable
 fun MetronomeHomeScreen(
     navController: NavHostController = rememberNavController(),
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = MetronomeScreen.valueOf(
@@ -63,7 +64,7 @@ fun MetronomeHomeScreen(
                 contentAlignment = Alignment.Center
             ) {
                 composable(route = MetronomeScreen.Home.name) {
-                    HomeScreen()
+                    HomeScreen(viewModel)
                 }
                 composable(route = MetronomeScreen.Settings.name) {
                     SettingsScreen()
@@ -77,8 +78,8 @@ fun MetronomeHomeScreen(
                             navController.navigate(MetronomeScreen.TrackSearcher.name)
                         },
                         onTrackPicked = {
-                            navController.navigateUp()
-                            // TODO: use picked track to update metronome state here
+                            viewModel.updateMetronomeConfig(it)
+                            navController.navigate(MetronomeScreen.Home.name)
                         }
                     )
                 }
@@ -97,7 +98,7 @@ fun MetronomeHomeScreen(
 
 @Composable
 private fun HomeScreen(
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: HomeViewModel
 ) {
     val metronomeConfig by viewModel.metronomeConfig.collectAsState()
 
