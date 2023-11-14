@@ -24,14 +24,21 @@ import com.example.metronome.data.Track
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,20 +46,31 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.metronome.R
 import com.example.metronome.ui.AppViewModelProvider
+import com.example.metronome.ui.components.NoteIcon
+import com.example.metronome.utils.NoteValue
+import kotlinx.coroutines.launch
 
 @Composable
 fun TrackPickerScreen(
     onCreateTrackButtonClicked: () -> Unit,
     onSearchTrackButtonClicked: () -> Unit,
+    onTrackEditClicked: (Track) -> Unit,
     onTrackPicked: (Track) -> Unit,
     viewModel: TrackPickerViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val trackerPickerUiState by viewModel.trackPickerUiState.collectAsState()
+    val viewModelScope = rememberCoroutineScope()
 
     TrackPickerBody(
         tracks = trackerPickerUiState.trackList,
         onCreateTrackButtonClicked = onCreateTrackButtonClicked,
         onSearchTrackButtonClicked = onSearchTrackButtonClicked,
+        onTrackEditClicked = { onTrackEditClicked(it) },
+        onTrackDeleteClicked = {
+            viewModelScope.launch {
+                viewModel.deleteTrack(it)
+            }
+        },
         onTrackPicked = onTrackPicked
     )
 }
@@ -62,22 +80,28 @@ private fun TrackPickerBody(
     tracks: List<Track>,
     onCreateTrackButtonClicked: () -> Unit,
     onSearchTrackButtonClicked: () -> Unit,
-    onTrackPicked: (Track) -> Unit,
+    onTrackEditClicked: (Track) -> Unit,
+    onTrackDeleteClicked: (Track) -> Unit,
+    onTrackPicked: (Track) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
         if (tracks.isEmpty()) {
+            // TODO: add a better view here when if list is empty...
             Text("Oops! Looks like you don't have any tracks yet.")
         } else {
             LazyColumn(
                 modifier = Modifier.matchParentSize()
             ) {
                 items(tracks) { track ->
-                    TrackRow(track) {
-                        onTrackPicked(it)
-                    }
+                    TrackRow(
+                        track = track,
+                        onTrackEditClicked = { onTrackEditClicked(it) },
+                        onTrackDeleteClicked = { onTrackDeleteClicked(it) },
+                        onTrackPicked = { onTrackPicked(it) }
+                    )
                 }
             }
         }
@@ -89,46 +113,103 @@ private fun TrackPickerBody(
 @Composable
 private fun TrackRow(
     track: Track,
-    onTrackPicked: (Track) -> Unit
+    onTrackPicked: (Track) -> Unit,
+    onTrackEditClicked: (Track) -> Unit,
+    onTrackDeleteClicked: (Track) -> Unit,
 ) {
+    var openDropDownMenu by remember { mutableStateOf(false) }
+
     Card(
         onClick = { onTrackPicked(track) },
         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
         Row(
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.padding_large))
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier.fillMaxHeight()
-            ) {
-                Text(
-                    text = track.title,
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Spacer(modifier = Modifier.weight(1.0f))
-                Text(
-                    text = track.artist,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
+            TrackTitleAndArtistColumn(track = track)
             Spacer(modifier = Modifier.weight(1.0f))
-            ElevatedCard {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(dimensionResource(id = R.dimen.padding_small))
+            TrackMetronomeConfigCard(track = track)
+            IconButton(onClick = { openDropDownMenu = true }) {
+                Icon(imageVector = Icons.Rounded.MoreHoriz, contentDescription = null)
+
+                DropdownMenu(
+                    expanded = openDropDownMenu,
+                    onDismissRequest = { openDropDownMenu = false }
                 ) {
-                    Text(
-                        text = "${track.bpm} BPM",
-                        style = MaterialTheme.typography.titleMedium
+                    DropdownMenuItem(
+                        text = { Text(text = "Edit track") },
+                        onClick = {
+                            onTrackEditClicked(track)
+                            openDropDownMenu = false
+                        }
                     )
-                    Spacer(modifier = Modifier.weight(1.0f))
-                    Text(
-                        text = "${track.timeSignature.upper}/${track.timeSignature.lower}",
-                        style = MaterialTheme.typography.titleMedium
+                    DropdownMenuItem(
+                        text = { Text(text = "Delete track", color = MaterialTheme.colorScheme.error) },
+                        onClick = {
+                            onTrackDeleteClicked(track)
+                            openDropDownMenu = false
+                        }
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrackTitleAndArtistColumn(track: Track) {
+    Column(
+        modifier = Modifier.fillMaxHeight()
+    ) {
+        Text(
+            text = track.title,
+            style = MaterialTheme.typography.titleLarge
+        )
+        Spacer(modifier = Modifier.weight(1.0f))
+        Text(
+            text = track.artist,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.secondary
+        )
+    }
+}
+
+@Composable
+private fun TrackMetronomeConfigCard(track: Track) {
+    ElevatedCard(
+        modifier = Modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.padding_small))
+        ) {
+            NoteIcon(
+                noteValue = track.noteValue ?: NoteValue.QUARTER,
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.padding_small))
+            )
+            Divider(modifier = Modifier
+                .fillMaxHeight()
+                .width(1.dp)
+            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.padding_small))
+            ) {
+                Text(
+                    text = "${track.bpm}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = "${track.timeSignature.upper}/${track.timeSignature.lower}",
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
         }
     }
@@ -183,7 +264,9 @@ private fun TrackPickerScreenPreview() {
         tracks = testTracks,
         onCreateTrackButtonClicked = {},
         onSearchTrackButtonClicked = {},
-        onTrackPicked = {}
+        onTrackPicked = {},
+        onTrackDeleteClicked = {},
+        onTrackEditClicked = {}
     )
 }
 

@@ -77,6 +77,10 @@ fun MetronomeHomeScreen(
                         onSearchTrackButtonClicked = {
                             navController.navigate(MetronomeScreen.TrackSearcher.name)
                         },
+                        onTrackEditClicked = {
+                            // TODO: navigate to a TrackEditorScreen here instead
+                            navController.navigate(MetronomeScreen.TrackCreator.name)
+                        },
                         onTrackPicked = {
                             viewModel.updateMetronomeConfig(it)
                             navController.navigate(MetronomeScreen.Home.name)

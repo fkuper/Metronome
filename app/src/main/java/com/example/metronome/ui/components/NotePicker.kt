@@ -56,6 +56,30 @@ fun NotePicker(
     }
 }
 
+@Composable
+fun NoteIcon(
+    noteValue: NoteValue,
+    modifier: Modifier = Modifier
+) {
+    return when (noteValue) {
+        NoteValue.QUARTER -> Icon(
+            imageVector = Icons.Rounded.MusicNote,
+            contentDescription = stringResource(id = R.string.note_value_quarter),
+            modifier = modifier
+        )
+        NoteValue.EIGHTH -> Icon(
+            imageVector = Icons.Rounded.ShoppingCart,
+            contentDescription = stringResource(id = R.string.note_value_eighth),
+            modifier = modifier
+        )
+        NoteValue.SIXTEENTH -> Icon(
+            imageVector = Icons.Rounded.Warning,
+            contentDescription = stringResource(id = R.string.note_value_sixteenth),
+            modifier = modifier
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NoteValueCard(
@@ -111,30 +135,6 @@ private fun PickDialog(
         ) {
             NoteValueGrid(onNoteValuePicked = onNoteValuePicked)
         }
-    }
-}
-
-@Composable
-private fun NoteIcon(
-    noteValue: NoteValue,
-    modifier: Modifier = Modifier
-) {
-    return when (noteValue) {
-        NoteValue.QUARTER -> Icon(
-            imageVector = Icons.Rounded.MusicNote,
-            contentDescription = stringResource(id = R.string.note_value_quarter),
-            modifier = modifier
-        )
-        NoteValue.EIGHTH -> Icon(
-            imageVector = Icons.Rounded.ShoppingCart,
-            contentDescription = stringResource(id = R.string.note_value_eighth),
-            modifier = modifier
-        )
-        NoteValue.SIXTEENTH -> Icon(
-            imageVector = Icons.Rounded.Warning,
-            contentDescription = stringResource(id = R.string.note_value_sixteenth),
-            modifier = modifier
-        )
     }
 }
 

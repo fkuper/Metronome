@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class TrackPickerViewModel(tracksRepository: TracksRepository) : ViewModel() {
+class TrackPickerViewModel(private val tracksRepository: TracksRepository) : ViewModel() {
 
     val trackPickerUiState = tracksRepository.getAllTracks()
         .map {
@@ -19,6 +19,10 @@ class TrackPickerViewModel(tracksRepository: TracksRepository) : ViewModel() {
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
             initialValue = TrackPickerUiState()
         )
+
+    suspend fun deleteTrack(track: Track) {
+        tracksRepository.delete(track)
+    }
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
