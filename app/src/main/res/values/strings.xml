@@ -19,6 +19,9 @@
     <string name="time_signature_picker_title">Pick a time signature</string>
     <string name="note_value_picker_title">Pick a note value</string>
 
+    <string name="bpm_increment">increase BPM</string>
+    <string name="bpm_decrement">decrease BPM</string>
+
     <string name="note_value_quarter">quarter notes</string>
     <string name="note_value_eighth">eighth notes</string>
     <string name="note_value_sixteenth">sixteenth notes</string>

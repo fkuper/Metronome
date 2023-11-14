@@ -13,4 +13,6 @@
     <dimen name="corner_size_small">8dp</dimen>
     <dimen name="corner_size_medium">8dp</dimen>
     <dimen name="corner_size_large">16dp</dimen>
+
+    <dimen name="bpm_picker_width">100dp</dimen>
 </resources>

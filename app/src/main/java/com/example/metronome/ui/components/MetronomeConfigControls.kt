@@ -26,8 +26,7 @@ fun MetronomeConfigControls(
     ) {
         BpmPicker(
             bpm = bpm,
-            onBpmChanged = onBpmChanged,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            onBpmChanged = onBpmChanged
         )
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
