@@ -1,6 +1,7 @@
 package com.example.metronome.ui.tracks
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -52,7 +53,11 @@ private fun TrackCreatorBody(
             trackDetails = trackDetails,
             onValueChange = onValueChange
         )
-        Button(onClick = onTrackCreated) {
+        Spacer(modifier = Modifier.weight(1.0f))
+        Button(
+            onClick = onTrackCreated,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Save Item")
         }
     }
