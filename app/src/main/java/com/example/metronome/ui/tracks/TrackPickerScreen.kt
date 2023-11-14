@@ -1,7 +1,6 @@
 package com.example.metronome.ui.tracks
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -24,9 +23,11 @@ import androidx.compose.ui.Modifier
 import com.example.metronome.data.Track
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
@@ -84,67 +85,51 @@ private fun TrackPickerBody(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TrackRow(
     track: Track,
     onTrackPicked: (Track) -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .padding(dimensionResource(id = R.dimen.padding_small))
-            .height(IntrinsicSize.Min)
-            .border(
-                width = dimensionResource(id = R.dimen.border_width_medium),
-                color = MaterialTheme.colorScheme.surfaceTint,
-                shape = CircleShape
-                    .copy(CornerSize(dimensionResource(id = R.dimen.corner_size_small)))
-            )
-            .padding(dimensionResource(id = R.dimen.padding_medium)),
-        verticalAlignment = Alignment.CenterVertically
+    Card(
+        onClick = { onTrackPicked(track) },
+        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
-        Column(
-            modifier = Modifier.fillMaxHeight()
+        Row(
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
         ) {
-            Text(
-                text = track.title,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(modifier = Modifier.weight(1.0f))
-            Text(
-                text = track.artist,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
-        Spacer(modifier = Modifier.weight(1.0f))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxHeight()
-                .border(
-                    width = dimensionResource(id = R.dimen.border_width_small),
-                    color = MaterialTheme.colorScheme.surfaceTint,
-                    shape = CircleShape.copy(CornerSize(dimensionResource(id = R.dimen.corner_size_small)))
+            Column(
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                Text(
+                    text = track.title,
+                    style = MaterialTheme.typography.titleLarge
                 )
-                .padding(dimensionResource(id = R.dimen.padding_small))
-        ) {
-            Text(
-                text = "${track.bpm} BPM",
-                style = MaterialTheme.typography.titleMedium
-            )
+                Spacer(modifier = Modifier.weight(1.0f))
+                Text(
+                    text = track.artist,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
             Spacer(modifier = Modifier.weight(1.0f))
-            Text(
-                text = "${track.timeSignature.upper}/${track.timeSignature.lower}",
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-        IconButton(onClick = {
-            onTrackPicked(track)
-        }) {
-            Icon(
-                imageVector = Icons.Filled.KeyboardArrowRight,
-                contentDescription = stringResource(id = R.string.pick_track_to_play_button)
-            )
+            ElevatedCard {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(dimensionResource(id = R.dimen.padding_small))
+                ) {
+                    Text(
+                        text = "${track.bpm} BPM",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.weight(1.0f))
+                    Text(
+                        text = "${track.timeSignature.upper}/${track.timeSignature.lower}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
         }
     }
 }
