@@ -1,5 +1,7 @@
 package com.example.metronome.ui.components
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -15,17 +17,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import com.example.metronome.R
 import com.example.metronome.utils.TimeSignature
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimeSignaturePicker(
     timeSignature: TimeSignature,
-    onTimeSignaturePicked: (TimeSignature) -> Unit,
-    modifier: Modifier = Modifier
+    onTimeSignaturePicked: (TimeSignature) -> Unit
 ) {
     val openPickerDialog = remember { mutableStateOf(false) }
 
@@ -57,26 +59,40 @@ private fun TimeSignatureCard(
 ) {
     ElevatedCard(
         onClick = onClick,
-        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        modifier = Modifier
+            .padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
         Text(
             text = "${timeSignature.upper}/${timeSignature.lower}",
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.padding_medium))
         )
     }
 }
 
 @Composable
 private fun TimeSignatureGrid(onTimeSignaturePicked: (TimeSignature) -> Unit) {
-    LazyVerticalGrid(columns = GridCells.Fixed(TimeSignature.values().size)) {
-        items(TimeSignature.values()) {
-            TimeSignatureCard(
-                timeSignature = it,
-                onClick = {
-                    onTimeSignaturePicked(it)
-                }
-            )
+    Column {
+        Text(
+            text = stringResource(id = R.string.time_signature_picker_title),
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.padding_medium))
+        )
+        LazyVerticalGrid(columns = GridCells.Fixed(TimeSignature.values().size)) {
+            items(TimeSignature.values()) {
+                TimeSignatureCard(
+                    timeSignature = it,
+                    onClick = {
+                        onTimeSignaturePicked(it)
+                    }
+                )
+            }
         }
     }
 }

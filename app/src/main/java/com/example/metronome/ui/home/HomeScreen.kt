@@ -29,17 +29,14 @@ import com.example.metronome.ui.SettingsScreen
 import com.example.metronome.ui.components.MetronomeConfigControls
 import com.example.metronome.ui.tracks.TrackCreatorScreen
 import com.example.metronome.ui.tracks.TrackPickerScreen
-import com.example.metronome.utils.MetronomeConfig
 import com.example.metronome.utils.MetronomeScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MetronomeHomeScreen(
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController(),
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val metronomeConfig by viewModel.metronomeConfig.collectAsState()
     val currentScreen = MetronomeScreen.valueOf(
         backStackEntry?.destination?.route ?: MetronomeScreen.Home.name
     )
@@ -66,7 +63,7 @@ fun MetronomeHomeScreen(
                 contentAlignment = Alignment.Center
             ) {
                 composable(route = MetronomeScreen.Home.name) {
-                    HomeScreen(metronomeConfig = metronomeConfig)
+                    HomeScreen()
                 }
                 composable(route = MetronomeScreen.Settings.name) {
                     SettingsScreen()
@@ -100,20 +97,22 @@ fun MetronomeHomeScreen(
 
 @Composable
 private fun HomeScreen(
-    metronomeConfig: MetronomeConfig
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val metronomeConfig by viewModel.metronomeConfig.collectAsState()
+
     MetronomeConfigControls(
         bpm = metronomeConfig.bpm,
         timeSignature = metronomeConfig.timeSignature,
         noteValue = metronomeConfig.noteValue,
         onBpmChanged = {
-            // TODO: implement me
+            viewModel.updateMetronomeConfig(metronomeConfig.copy(bpm = it))
         },
         onTimeSignaturePicked = {
-            // TODO: implement me
+            viewModel.updateMetronomeConfig(metronomeConfig.copy(timeSignature = it))
         },
         onNoteValuePicked = {
-            // TODO: implement me
+            viewModel.updateMetronomeConfig(metronomeConfig.copy(noteValue = it))
         }
     )
 }

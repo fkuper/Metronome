@@ -10,4 +10,8 @@ class HomeViewModel: ViewModel() {
     private val _metronomeConfig = MutableStateFlow(MetronomeConfig())
     val metronomeConfig = _metronomeConfig.asStateFlow()
 
+    fun updateMetronomeConfig(metronomeConfig: MetronomeConfig) {
+        _metronomeConfig.value = metronomeConfig
+    }
+
 }

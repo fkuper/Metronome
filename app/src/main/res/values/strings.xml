@@ -15,4 +15,6 @@
 
     <string name="title_input_label">Track title</string>
     <string name="artist_input_label">Artist name</string>
+
+    <string name="time_signature_picker_title">Pick a time signature</string>
 </resources>
