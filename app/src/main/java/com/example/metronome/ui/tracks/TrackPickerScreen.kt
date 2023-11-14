@@ -1,5 +1,6 @@
 package com.example.metronome.ui.tracks
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -24,10 +26,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,7 +44,7 @@ fun TrackPickerScreen(
     onCreateTrackButtonClicked: () -> Unit,
     onSearchTrackButtonClicked: () -> Unit,
     onTrackPicked: (Track) -> Unit,
-    viewModel: TrackPickerScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: TrackPickerViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val trackerPickerUiState by viewModel.trackPickerUiState.collectAsState()
 
@@ -87,14 +91,15 @@ private fun TrackRow(
 ) {
     Row(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(dimensionResource(id = R.dimen.padding_small))
             .height(IntrinsicSize.Min)
             .border(
-                width = 1.dp,
+                width = dimensionResource(id = R.dimen.border_width_medium),
                 color = MaterialTheme.colorScheme.surfaceTint,
-                shape = CircleShape.copy(CornerSize(8.dp))
+                shape = CircleShape
+                    .copy(CornerSize(dimensionResource(id = R.dimen.corner_size_small)))
             )
-            .padding(8.dp),
+            .padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -117,11 +122,11 @@ private fun TrackRow(
             modifier = Modifier
                 .fillMaxHeight()
                 .border(
-                    width = 1.dp,
+                    width = dimensionResource(id = R.dimen.border_width_small),
                     color = MaterialTheme.colorScheme.surfaceTint,
-                    shape = CircleShape.copy(CornerSize(8.dp))
+                    shape = CircleShape.copy(CornerSize(dimensionResource(id = R.dimen.corner_size_small)))
                 )
-                .padding(4.dp)
+                .padding(dimensionResource(id = R.dimen.padding_small))
         ) {
             Text(
                 text = "${track.bpm} BPM",
@@ -150,18 +155,39 @@ private fun ButtonBar(
     onCreateTrackButtonClicked: () -> Unit
 ) {
     Row {
-        IconButton(onClick = onSearchTrackButtonClicked) {
-            Icon(
-                imageVector = Icons.Filled.Search,
-                contentDescription = stringResource(id = R.string.search_track_button)
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .padding(dimensionResource(id = R.dimen.padding_small))
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceTint,
+                    shape = CircleShape
+                        .copy(CornerSize(dimensionResource(id = R.dimen.corner_size_large)))
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onSearchTrackButtonClicked) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = stringResource(id = R.string.search_track_button),
+                    tint = MaterialTheme.colorScheme.surface
+                )
+            }
+            Divider(
+                color = MaterialTheme.colorScheme.surface,
+                modifier = Modifier
+                    .fillMaxHeight(fraction = 0.8f)
+                    .width(1.dp)
             )
+            IconButton(onClick = onCreateTrackButtonClicked) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(id = R.string.create_new_track_button),
+                    tint = MaterialTheme.colorScheme.surface
+                )
+            }
         }
-        IconButton(onClick = onCreateTrackButtonClicked) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = stringResource(id = R.string.create_new_track_button)
-            )
-        }
+        Spacer(modifier = Modifier.weight(1.0f))
     }
 }
 
@@ -177,6 +203,18 @@ private fun TrackPickerScreenPreview() {
 }
 
 val testTracks: List<Track> = listOf(
+    Track(artist = "Rush", title = "YYZ"),
+    Track(artist = "Interpol", title = "PDA"),
+    Track(artist = "Joan Jett", title = "Bad Reputation"),
+    Track(artist = "TJ Mack", title = "Chicas"),
+    Track(artist = "The Who", title = "Pinball Wizard"),
+    Track(artist = "Steely Dan", title = "Aja"),
+    Track(artist = "Rush", title = "YYZ"),
+    Track(artist = "Interpol", title = "PDA"),
+    Track(artist = "Joan Jett", title = "Bad Reputation"),
+    Track(artist = "TJ Mack", title = "Chicas"),
+    Track(artist = "The Who", title = "Pinball Wizard"),
+    Track(artist = "Steely Dan", title = "Aja"),
     Track(artist = "Rush", title = "YYZ"),
     Track(artist = "Interpol", title = "PDA"),
     Track(artist = "Joan Jett", title = "Bad Reputation"),

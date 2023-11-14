@@ -1,9 +1,5 @@
-package com.example.metronome.ui
+package com.example.metronome.ui.home
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -21,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,9 +24,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.metronome.R
-import com.example.metronome.ui.components.BpmPicker
-import com.example.metronome.ui.components.NotePicker
-import com.example.metronome.ui.components.TimeSignaturePicker
+import com.example.metronome.ui.AppViewModelProvider
+import com.example.metronome.ui.SettingsScreen
+import com.example.metronome.ui.components.MetronomeConfigControls
+import com.example.metronome.ui.tracks.TrackCreatorScreen
 import com.example.metronome.ui.tracks.TrackPickerScreen
 import com.example.metronome.utils.MetronomeConfig
 import com.example.metronome.utils.MetronomeScreen
@@ -39,7 +35,7 @@ import com.example.metronome.utils.MetronomeScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MetronomeHomeScreen(
-    viewModel: HomeScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController(),
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -90,7 +86,9 @@ fun MetronomeHomeScreen(
                     )
                 }
                 composable(route = MetronomeScreen.TrackCreator.name) {
-
+                    TrackCreatorScreen(onTrackCreated = {
+                        navController.navigate(MetronomeScreen.TrackPicker.name)
+                    })
                 }
                 composable(route = MetronomeScreen.TrackSearcher.name) {
 
@@ -104,32 +102,20 @@ fun MetronomeHomeScreen(
 private fun HomeScreen(
     metronomeConfig: MetronomeConfig
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        BpmPicker(
-            bpm = metronomeConfig.bpm,
-            onBpmChanged = {
-                // TODO: implement me
-            },
-            modifier = Modifier.padding(8.dp)
-        )
-        Column(modifier = Modifier.padding(8.dp)) {
-            TimeSignaturePicker(
-                timeSignature = metronomeConfig.timeSignature,
-                onTimeSignaturePicked = {
-                    // TODO: implement me
-                }
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            NotePicker(
-                noteValue = metronomeConfig.noteValue,
-                onNoteValuePicked = {
-                    // TODO: implement me
-                }
-            )
+    MetronomeConfigControls(
+        bpm = metronomeConfig.bpm,
+        timeSignature = metronomeConfig.timeSignature,
+        noteValue = metronomeConfig.noteValue,
+        onBpmChanged = {
+            // TODO: implement me
+        },
+        onTimeSignaturePicked = {
+            // TODO: implement me
+        },
+        onNoteValuePicked = {
+            // TODO: implement me
         }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

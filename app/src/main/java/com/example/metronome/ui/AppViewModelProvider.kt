@@ -6,7 +6,9 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.metronome.MetronomeApplication
-import com.example.metronome.ui.tracks.TrackPickerScreenViewModel
+import com.example.metronome.ui.home.HomeViewModel
+import com.example.metronome.ui.tracks.TrackCreatorViewModel
+import com.example.metronome.ui.tracks.TrackPickerViewModel
 
 /**
  * Provides Factory to create instance of ViewModel for the entire Metronome app
@@ -14,10 +16,13 @@ import com.example.metronome.ui.tracks.TrackPickerScreenViewModel
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
-            HomeScreenViewModel()
+            HomeViewModel()
         }
         initializer {
-            TrackPickerScreenViewModel(metronomeApplication().container.tracksRepository)
+            TrackPickerViewModel(metronomeApplication().container.tracksRepository)
+        }
+        initializer {
+            TrackCreatorViewModel(metronomeApplication().container.tracksRepository)
         }
     }
 }

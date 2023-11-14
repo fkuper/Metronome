@@ -12,4 +12,7 @@
     <string name="search_track_button">Search for a track</string>
     <string name="create_new_track_button">Create a new track</string>
     <string name="pick_track_to_play_button">Pick this track to play</string>
+
+    <string name="title_input_label">Track title</string>
+    <string name="artist_input_label">Artist name</string>
 </resources>

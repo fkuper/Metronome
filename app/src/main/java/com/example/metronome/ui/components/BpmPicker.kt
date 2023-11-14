@@ -1,5 +1,6 @@
 package com.example.metronome.ui.components
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -13,7 +14,7 @@ fun BpmPicker(
     onBpmChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var bpmState = remember { mutableIntStateOf(bpm) }
+    val bpmState = remember { mutableIntStateOf(bpm) }
 
     NumberPicker(
         value = bpmState.intValue,
@@ -22,6 +23,7 @@ fun BpmPicker(
             onBpmChanged(it)
         },
         range = 1..400,
+        dividersColor = MaterialTheme.colorScheme.surfaceTint,
         modifier = modifier
     )
 }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class TrackPickerScreenViewModel(tracksRepository: TracksRepository) : ViewModel() {
+class TrackPickerViewModel(tracksRepository: TracksRepository) : ViewModel() {
 
     val trackPickerUiState = tracksRepository.getAllTracks()
         .map {
