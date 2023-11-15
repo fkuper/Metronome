@@ -41,6 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -117,8 +118,6 @@ private fun TrackRow(
     onTrackEditClicked: (Track) -> Unit,
     onTrackDeleteClicked: (Track) -> Unit,
 ) {
-    var openDropDownMenu by remember { mutableStateOf(false) }
-
     Card(
         onClick = { onTrackPicked(track) },
         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
@@ -129,60 +128,51 @@ private fun TrackRow(
                 .height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TrackTitleAndArtistColumn(track = track)
-            Spacer(modifier = Modifier.weight(1.0f))
-            TrackMetronomeConfigCard(track = track)
-            IconButton(onClick = { openDropDownMenu = true }) {
-                Icon(imageVector = Icons.Rounded.MoreHoriz, contentDescription = null)
-
-                DropdownMenu(
-                    expanded = openDropDownMenu,
-                    onDismissRequest = { openDropDownMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(text = "Edit track") },
-                        onClick = {
-                            onTrackEditClicked(track)
-                            openDropDownMenu = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = "Delete track", color = MaterialTheme.colorScheme.error) },
-                        onClick = {
-                            onTrackDeleteClicked(track)
-                            openDropDownMenu = false
-                        }
-                    )
-                }
-            }
+            TrackTitleAndArtistColumn(
+                track = track,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1F)
+            )
+            TrackMetronomeConfigCard(
+                track = track,
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+            )
+            OpenTrackRowMenuButton(
+                onTrackEditClicked = { onTrackEditClicked(track) },
+                onTrackDeleteClicked = { onTrackDeleteClicked(track) }
+            )
         }
     }
 }
 
 @Composable
-private fun TrackTitleAndArtistColumn(track: Track) {
-    Column(
-        modifier = Modifier.fillMaxHeight()
-    ) {
+private fun TrackTitleAndArtistColumn(
+    track: Track,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
         Text(
             text = track.title,
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
         )
         Spacer(modifier = Modifier.weight(1.0f))
         Text(
             text = track.artist,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.secondary
+            color = MaterialTheme.colorScheme.secondary,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
         )
     }
 }
 
 @Composable
-private fun TrackMetronomeConfigCard(track: Track) {
-    ElevatedCard(
-        modifier = Modifier
-            .padding(horizontal = dimensionResource(id = R.dimen.padding_small))
-    ) {
+private fun TrackMetronomeConfigCard(track: Track, modifier: Modifier = Modifier) {
+    ElevatedCard(modifier = modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -257,6 +247,42 @@ private fun ButtonBar(
     }
 }
 
+@Composable
+private fun OpenTrackRowMenuButton(
+    onTrackEditClicked: () -> Unit,
+    onTrackDeleteClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var openDropDownMenu by remember { mutableStateOf(false) }
+
+    IconButton(
+        onClick = { openDropDownMenu = true },
+        modifier = modifier
+    ) {
+        Icon(imageVector = Icons.Rounded.MoreHoriz, contentDescription = null)
+
+        DropdownMenu(
+            expanded = openDropDownMenu,
+            onDismissRequest = { openDropDownMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(text = "Edit track") },
+                onClick = {
+                    onTrackEditClicked()
+                    openDropDownMenu = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text(text = "Delete track", color = MaterialTheme.colorScheme.error) },
+                onClick = {
+                    onTrackDeleteClicked()
+                    openDropDownMenu = false
+                }
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun TrackPickerScreenPreview() {
@@ -273,7 +299,10 @@ private fun TrackPickerScreenPreview() {
 val testTracks: List<Track> = listOf(
     Track(artist = "Rush", title = "YYZ"),
     Track(artist = "Interpol", title = "PDA"),
-    Track(artist = "Joan Jett", title = "Bad Reputation"),
+    Track(
+        artist = "Joan Jett Really Long Artist Name like what is happening",
+        title = "Bad Reputation Really Long Song Name Please Clap"
+    ),
     Track(artist = "TJ Mack", title = "Chicas"),
     Track(artist = "The Who", title = "Pinball Wizard"),
     Track(artist = "Steely Dan", title = "Aja"),
