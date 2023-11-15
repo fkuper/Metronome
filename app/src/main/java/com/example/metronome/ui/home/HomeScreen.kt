@@ -20,14 +20,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.metronome.R
 import com.example.metronome.ui.AppViewModelProvider
 import com.example.metronome.ui.SettingsScreen
 import com.example.metronome.ui.components.MetronomeConfigControls
 import com.example.metronome.ui.tracks.TrackCreatorScreen
+import com.example.metronome.ui.tracks.TrackEditorScreen
 import com.example.metronome.ui.tracks.TrackPickerScreen
 import com.example.metronome.utils.MetronomeScreen
 
@@ -38,9 +41,9 @@ fun MetronomeHomeScreen(
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = MetronomeScreen.valueOf(
+    val currentScreen = checkNotNull(MetronomeScreen.forString(
         backStackEntry?.destination?.route ?: MetronomeScreen.Home.name
-    )
+    ))
 
     Scaffold(
         topBar = {
@@ -78,18 +81,31 @@ fun MetronomeHomeScreen(
                             navController.navigate(MetronomeScreen.TrackSearcher.name)
                         },
                         onTrackEditClicked = {
-                            // TODO: navigate to a TrackEditorScreen here instead
-                            navController.navigate(MetronomeScreen.TrackCreator.name)
+                            navController.navigate(
+                                "${MetronomeScreen.TrackEditor.name}/${it.id}"
+                            )
                         },
                         onTrackPicked = {
                             viewModel.updateMetronomeConfig(it)
-                            navController.navigate(MetronomeScreen.Home.name)
+                            navController.navigateUp()
                         }
                     )
                 }
                 composable(route = MetronomeScreen.TrackCreator.name) {
                     TrackCreatorScreen(onTrackCreated = {
-                        navController.navigate(MetronomeScreen.TrackPicker.name)
+                        navController.navigateUp()
+                    })
+                }
+                composable(
+                    route = "${MetronomeScreen.TrackEditor.name}/{${MetronomeScreen.TrackEditor.navArgumentName}}",
+                    arguments = listOf(
+                        navArgument(MetronomeScreen.TrackEditor.navArgumentName!!) {
+                            type = NavType.IntType
+                        }
+                    )
+                ) {
+                    TrackEditorScreen(onTrackUpdated = {
+                        navController.navigateUp()
                     })
                 }
                 composable(route = MetronomeScreen.TrackSearcher.name) {

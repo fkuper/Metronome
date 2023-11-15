@@ -30,7 +30,7 @@ fun BpmPicker(
     bpm: Int,
     onBpmChanged: (Int) -> Unit,
 ) {
-    val bpmState = remember { mutableIntStateOf(bpm) }
+    val bpmState = remember(bpm) { mutableIntStateOf(bpm) }
     val possibleValues = (BPM_LOWER_BOUND..BPM_UPPER_BOUND).toList()
 
     Row(

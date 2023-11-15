@@ -2,12 +2,14 @@ package com.example.metronome.ui
 
 import android.app.Application
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.metronome.MetronomeApplication
 import com.example.metronome.ui.home.HomeViewModel
 import com.example.metronome.ui.tracks.TrackCreatorViewModel
+import com.example.metronome.ui.tracks.TrackEditorViewModel
 import com.example.metronome.ui.tracks.TrackPickerViewModel
 
 /**
@@ -23,6 +25,12 @@ object AppViewModelProvider {
         }
         initializer {
             TrackCreatorViewModel(metronomeApplication().container.tracksRepository)
+        }
+        initializer {
+            TrackEditorViewModel(
+                this.createSavedStateHandle(),
+                metronomeApplication().container.tracksRepository
+            )
         }
     }
 }

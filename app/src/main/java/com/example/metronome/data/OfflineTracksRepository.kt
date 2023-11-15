@@ -10,6 +10,8 @@ class OfflineTracksRepository(private val trackDao: TrackDao) : TracksRepository
 
     override suspend fun delete(track: Track) = trackDao.delete(track)
 
+    override fun getTrack(id: Int): Flow<Track?> = trackDao.getTrack(id)
+
     override fun getAllTracks(): Flow<List<Track>> = trackDao.getAllTracks()
 
 }

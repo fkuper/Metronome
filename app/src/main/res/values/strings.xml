@@ -4,6 +4,7 @@
     <string name="track_picker">Pick a track</string>
     <string name="track_searcher">Search for a track</string>
     <string name="track_creator">Create a track</string>
+    <string name="track_editor">Edit your track</string>
     <string name="settings">Settings</string>
 
     <string name="back_button">Go Back</string>
