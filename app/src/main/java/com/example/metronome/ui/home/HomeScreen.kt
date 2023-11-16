@@ -1,10 +1,13 @@
 package com.example.metronome.ui.home
 
+import android.content.Intent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.rounded.PlayCircle
+import androidx.compose.material.icons.rounded.StopCircle
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,6 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.metronome.MetronomeApplication
 import com.example.metronome.R
 import com.example.metronome.ui.AppViewModelProvider
 import com.example.metronome.ui.SettingsScreen
@@ -33,6 +37,7 @@ import com.example.metronome.ui.tracks.TrackCreatorScreen
 import com.example.metronome.ui.tracks.TrackEditorScreen
 import com.example.metronome.ui.tracks.TrackPickerScreen
 import com.example.metronome.utils.MetronomeScreen
+import com.example.metronome.service.MetronomeService
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,6 +126,31 @@ private fun HomeScreen(
     viewModel: HomeViewModel
 ) {
     val metronomeConfig by viewModel.metronomeConfig.collectAsState()
+    val metronomeIsPlaying by viewModel.metronomeIsPlaying.collectAsState()
+    val applicationContext = viewModel.getApplication<MetronomeApplication>().applicationContext
+
+    if (!metronomeIsPlaying) {
+        IconButton(
+            onClick = {
+                Intent(applicationContext, MetronomeService::class.java).also {
+                    it.action = MetronomeService.Action.START.name
+                    it.putExtra(MetronomeService.Extra.BPM.name, metronomeConfig.bpm)
+                    viewModel.startMetronomeService(it)
+                }
+            }
+        ) {
+            Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null)
+        }
+    } else {
+        IconButton(onClick = {
+            Intent(applicationContext, MetronomeService::class.java).also {
+                it.action = MetronomeService.Action.STOP.name
+                viewModel.stopMetronomeService(it)
+            }
+        }) {
+            Icon(imageVector = Icons.Rounded.StopCircle, contentDescription = null)
+        }
+    }
 
     MetronomeConfigControls(
         bpm = metronomeConfig.bpm,

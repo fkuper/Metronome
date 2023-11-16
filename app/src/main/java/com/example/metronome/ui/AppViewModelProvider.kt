@@ -18,7 +18,7 @@ import com.example.metronome.ui.tracks.TrackPickerViewModel
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
-            HomeViewModel()
+            HomeViewModel(metronomeApplication())
         }
         initializer {
             TrackPickerViewModel(metronomeApplication().container.tracksRepository)
