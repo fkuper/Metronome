@@ -17,8 +17,10 @@ class MetronomeEngine(context: Context) {
     private var soundPool: SoundPool
 
     private var metronomeConfig = MetronomeConfig()
-    private var soundId: Int = -1
+    private var soundIdNormal: Int = -1
+    private var soundIdAccent: Int = -1
     private var delayIntervalInMilliSeconds: Long = 500
+    private var tickCounter: Int = -1
 
     private val thread = HandlerThread("metronome_engine")
 
@@ -31,11 +33,12 @@ class MetronomeEngine(context: Context) {
 
         soundPool = SoundPool
             .Builder()
-            .setMaxStreams(1)
+            .setMaxStreams(4)
             .setAudioAttributes(audioAttributes)
             .build()
 
-        soundId = soundPool.load(context, R.raw.metronome_click_1, 1)
+        soundIdNormal = soundPool.load(context, R.raw.metronome_click_1, 1)
+        soundIdAccent = soundPool.load(context, R.raw.metronome_click_2, 1)
 
         thread.start()
         handler = Handler(thread.looper)
@@ -45,12 +48,14 @@ class MetronomeEngine(context: Context) {
         metronomeConfig = config
         updateDelayInterval()
         isRunning = true
-        listener?.onStartTicks()
+
+        listener?.onStartTicks(tickCounter)
         handler.post(this::run)
     }
 
-    fun pause() {
+    fun reset() {
         handler.removeCallbacks(thread)
+        tickCounter = -1
         listener?.onStopTicks()
         isRunning = false
     }
@@ -67,14 +72,28 @@ class MetronomeEngine(context: Context) {
         delayIntervalInMilliSeconds = delayInMilliSeconds
     }
 
+    private fun advanceByOneTick() {
+        tickCounter = (tickCounter + 1) % metronomeConfig.timeSignature.upper
+        listener?.onTick(tickCounter)
+    }
+
+    private fun playTickSound() {
+        if (tickCounter == 0) {
+            if (soundIdAccent != -1) {
+                soundPool.play(soundIdAccent, 1F, 1F, 0, 0, 1F)
+            }
+        } else {
+            if (soundIdNormal != -1) {
+                soundPool.play(soundIdNormal, 1F, 1F, 0, 0, 1F)
+            }
+        }
+    }
+
     private fun run() {
         if (isRunning) {
             handler.postDelayed(this::run, delayIntervalInMilliSeconds)
-
-            listener?.onTick()
-            if (soundId != -1) {
-                soundPool.play(soundId, 1F, 1F, 0, 0, 1F)
-            }
+            advanceByOneTick()
+            playTickSound()
         }
     }
 

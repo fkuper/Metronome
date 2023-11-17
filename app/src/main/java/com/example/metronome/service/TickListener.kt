@@ -1,7 +1,19 @@
 package com.example.metronome.service
 
 interface TickListener {
-    fun onStartTicks()
-    fun onTick()
+    /**
+     * Called when the engine starts.
+     */
+    fun onStartTicks(tickCount: Int)
+
+    /**
+     * Called whenever the engine performs one tick.
+     * Starts counting at 0 and goes up to NoteValue.upper - 1 before going back to 0.
+     */
+    fun onTick(tickCount: Int)
+
+    /**
+     * Called when the engine stops. This should reset the metronome engine back to 0.
+     */
     fun onStopTicks()
 }

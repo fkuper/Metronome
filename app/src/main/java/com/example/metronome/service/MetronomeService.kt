@@ -3,10 +3,13 @@ package com.example.metronome.service
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.example.metronome.R
 import com.example.metronome.utils.MetronomeConfig
+import com.example.metronome.utils.NoteValue
+import com.example.metronome.utils.TimeSignature
 
 class MetronomeService : Service(), TickListener {
 
@@ -24,18 +27,18 @@ class MetronomeService : Service(), TickListener {
         if ((intent != null) && (intent.action != null)) {
             when (intent.action) {
                 Action.START.name -> {
-                    val config = MetronomeConfig(
-                        bpm = intent.getIntExtra(Extra.BPM.name, 120)
-                    )
-
                     pause()
-                    play(config)
+                    play(getMetronomeConfigFrom(intent))
                 }
                 Action.STOP.name -> pause()
             }
         }
 
         return START_STICKY
+    }
+
+    fun setListener(listener: TickListener) {
+        this.listener = listener
     }
 
     private fun play(config: MetronomeConfig) {
@@ -53,13 +56,26 @@ class MetronomeService : Service(), TickListener {
     }
 
     private fun pause() {
-        metronomeEngine.pause()
-
+        metronomeEngine.reset()
         stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
-    fun setListener(listener: TickListener) {
-        this.listener = listener
+    private fun getMetronomeConfigFrom(intent: Intent): MetronomeConfig {
+        val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            MetronomeConfig(
+                bpm = intent.getIntExtra(Extra.BPM.name, 120),
+                timeSignature = intent.getParcelableExtra(Extra.TIME_SIGNATURE.name, TimeSignature::class.java) ?: TimeSignature.FOUR_FOUR,
+                noteValue = intent.getParcelableExtra(Extra.NOTE_VALUE.name, NoteValue::class.java) ?: NoteValue.QUARTER
+            )
+        } else {
+            MetronomeConfig(
+                bpm = intent.getIntExtra(Extra.BPM.name, 120),
+                timeSignature = intent.getParcelableExtra(Extra.TIME_SIGNATURE.name) ?: TimeSignature.FOUR_FOUR,
+                noteValue = intent.getParcelableExtra(Extra.NOTE_VALUE.name) ?: NoteValue.QUARTER
+            )
+        }
+
+        return config
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -75,8 +91,8 @@ class MetronomeService : Service(), TickListener {
         fun getService(): MetronomeService = this@MetronomeService
     }
 
-    override fun onStartTicks() { listener?.onStartTicks() }
-    override fun onTick() { listener?.onTick() }
+    override fun onStartTicks(tickCount: Int) { listener?.onStartTicks(tickCount) }
+    override fun onTick(tickCount: Int) { listener?.onTick(tickCount) }
     override fun onStopTicks() { listener?.onStopTicks() }
 
     enum class Action {
@@ -84,7 +100,7 @@ class MetronomeService : Service(), TickListener {
     }
 
     enum class Extra {
-        BPM
+        BPM, TIME_SIGNATURE, NOTE_VALUE
     }
 
 }

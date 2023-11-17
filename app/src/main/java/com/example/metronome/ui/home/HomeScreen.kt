@@ -1,211 +1,183 @@
 package com.example.metronome.ui.home
 
 import android.content.Intent
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material.icons.rounded.FlagCircle
 import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.StopCircle
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.metronome.MetronomeApplication
 import com.example.metronome.R
-import com.example.metronome.ui.AppViewModelProvider
-import com.example.metronome.ui.SettingsScreen
 import com.example.metronome.ui.components.MetronomeConfigControls
-import com.example.metronome.ui.tracks.TrackCreatorScreen
-import com.example.metronome.ui.tracks.TrackEditorScreen
-import com.example.metronome.ui.tracks.TrackPickerScreen
-import com.example.metronome.utils.MetronomeScreen
 import com.example.metronome.service.MetronomeService
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MetronomeHomeScreen(
-    navController: NavHostController = rememberNavController(),
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
-) {
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = checkNotNull(MetronomeScreen.forString(
-        backStackEntry?.destination?.route ?: MetronomeScreen.Home.name
-    ))
-
-    Scaffold(
-        topBar = {
-            MetronomeAppBar(
-                currentScreen = currentScreen,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() },
-                onTrackListButtonClicked = {
-                    navController.navigate(MetronomeScreen.TrackPicker.name)
-                },
-                onSettingsButtonClicked = {
-                    navController.navigate(MetronomeScreen.Settings.name)
-                },
-            )
-        },
-        content = { paddingValues ->
-            NavHost(
-                navController = navController,
-                startDestination = MetronomeScreen.Home.name,
-                modifier = Modifier.padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                composable(route = MetronomeScreen.Home.name) {
-                    HomeScreen(viewModel)
-                }
-                composable(route = MetronomeScreen.Settings.name) {
-                    SettingsScreen()
-                }
-                composable(route = MetronomeScreen.TrackPicker.name) {
-                    TrackPickerScreen(
-                        onCreateTrackButtonClicked = {
-                            navController.navigate(MetronomeScreen.TrackCreator.name)
-                        },
-                        onSearchTrackButtonClicked = {
-                            navController.navigate(MetronomeScreen.TrackSearcher.name)
-                        },
-                        onTrackEditClicked = {
-                            navController.navigate(
-                                "${MetronomeScreen.TrackEditor.name}/${it.id}"
-                            )
-                        },
-                        onTrackPicked = {
-                            viewModel.updateMetronomeConfig(it)
-                            navController.navigateUp()
-                        }
-                    )
-                }
-                composable(route = MetronomeScreen.TrackCreator.name) {
-                    TrackCreatorScreen(onTrackCreated = {
-                        navController.navigateUp()
-                    })
-                }
-                composable(
-                    route = "${MetronomeScreen.TrackEditor.name}/{${MetronomeScreen.TrackEditor.navArgumentName}}",
-                    arguments = listOf(
-                        navArgument(MetronomeScreen.TrackEditor.navArgumentName!!) {
-                            type = NavType.IntType
-                        }
-                    )
-                ) {
-                    TrackEditorScreen(onTrackUpdated = {
-                        navController.navigateUp()
-                    })
-                }
-                composable(route = MetronomeScreen.TrackSearcher.name) {
-
-                }
-            }
-        }
-    )
-}
+import com.example.metronome.utils.MetronomeConfig
+import com.example.metronome.utils.NoteValue
+import com.example.metronome.utils.TimeSignature
 
 @Composable
-private fun HomeScreen(
-    viewModel: HomeViewModel
-) {
+fun HomeScreen(viewModel: HomeViewModel) {
     val metronomeConfig by viewModel.metronomeConfig.collectAsState()
     val metronomeIsPlaying by viewModel.metronomeIsPlaying.collectAsState()
+    val metronomeCount by viewModel.metronomeTickCounter.collectAsState()
     val applicationContext = viewModel.getApplication<MetronomeApplication>().applicationContext
 
-    if (!metronomeIsPlaying) {
-        IconButton(
-            onClick = {
-                Intent(applicationContext, MetronomeService::class.java).also {
-                    it.action = MetronomeService.Action.START.name
-                    it.putExtra(MetronomeService.Extra.BPM.name, metronomeConfig.bpm)
-                    viewModel.startMetronomeService(it)
-                }
+    HomeScreenBody(
+        metronomeConfig = metronomeConfig,
+        metronomeIsPlaying = metronomeIsPlaying,
+        metronomeCount = metronomeCount,
+        onPlayPressed = {
+            Intent(applicationContext, MetronomeService::class.java).also {
+                it.action = MetronomeService.Action.START.name
+                it.putExtra(MetronomeService.Extra.BPM.name, metronomeConfig.bpm)
+                it.putExtra(MetronomeService.Extra.TIME_SIGNATURE.name, metronomeConfig.timeSignature)
+                it.putExtra(MetronomeService.Extra.NOTE_VALUE.name, metronomeConfig.noteValue)
+                viewModel.startMetronomeService(it)
             }
-        ) {
-            Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null)
-        }
-    } else {
-        IconButton(onClick = {
+        },
+        onStopPressed = {
             Intent(applicationContext, MetronomeService::class.java).also {
                 it.action = MetronomeService.Action.STOP.name
                 viewModel.stopMetronomeService(it)
             }
-        }) {
-            Icon(imageVector = Icons.Rounded.StopCircle, contentDescription = null)
-        }
-    }
-
-    MetronomeConfigControls(
-        bpm = metronomeConfig.bpm,
-        timeSignature = metronomeConfig.timeSignature,
-        noteValue = metronomeConfig.noteValue,
-        onBpmChanged = {
-            viewModel.updateMetronomeConfig(metronomeConfig.copy(bpm = it))
         },
-        onTimeSignaturePicked = {
-            viewModel.updateMetronomeConfig(metronomeConfig.copy(timeSignature = it))
-        },
-        onNoteValuePicked = {
-            viewModel.updateMetronomeConfig(metronomeConfig.copy(noteValue = it))
-        }
+        onBpmChanged = { viewModel.updateMetronomeConfig(metronomeConfig.copy(bpm = it)) },
+        onTimeSignatureChanged = { viewModel.updateMetronomeConfig(metronomeConfig.copy(timeSignature = it)) },
+        onNoteValuePicked = { viewModel.updateMetronomeConfig(metronomeConfig.copy(noteValue = it)) }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MetronomeAppBar(
-    currentScreen: MetronomeScreen,
-    canNavigateBack: Boolean,
-    navigateUp: () -> Unit,
-    onTrackListButtonClicked: () -> Unit,
-    onSettingsButtonClicked: () -> Unit,
+private fun HomeScreenBody(
+    metronomeConfig: MetronomeConfig,
+    metronomeIsPlaying: Boolean,
+    metronomeCount: Int,
+    onPlayPressed: () -> Unit,
+    onStopPressed: () -> Unit,
+    onBpmChanged: (Int) -> Unit,
+    onTimeSignatureChanged: (TimeSignature) -> Unit,
+    onNoteValuePicked: (NoteValue) -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+    ) {
+        MetronomeTickView(
+            timeSignature = metronomeConfig.timeSignature,
+            tickCount = metronomeCount,
+            modifier = Modifier.fillMaxWidth().weight(1F)
+        )
+        MetronomePlayButtonBar(
+            metronomeIsPlaying = metronomeIsPlaying,
+            onPlayPressed = onPlayPressed,
+            onStopPressed = onStopPressed
+        )
+        MetronomeConfigControls(
+            bpm = metronomeConfig.bpm,
+            timeSignature = metronomeConfig.timeSignature,
+            noteValue = metronomeConfig.noteValue,
+            onBpmChanged = { onBpmChanged(it) },
+            onTimeSignaturePicked = { onTimeSignatureChanged(it) },
+            onNoteValuePicked = { onNoteValuePicked(it) }
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MetronomeTickView(
+    timeSignature: TimeSignature,
+    tickCount: Int,
     modifier: Modifier = Modifier
 ) {
-    CenterAlignedTopAppBar(
-        title = { Text(stringResource(id = currentScreen.title)) },
+    FlowRow(
         modifier = modifier,
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = stringResource(id = R.string.back_button)
-                    )
-                }
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalArrangement = Arrangement.Center,
+        maxItemsInEachRow = 4
+    ) {
+        repeat(timeSignature.upper) {
+            val imageVector =
+                if (it == 0) Icons.Rounded.FlagCircle
+                else Icons.Rounded.Circle
+            val tint =
+                if (it == tickCount) MaterialTheme.colorScheme.surfaceTint
+                else MaterialTheme.colorScheme.secondary
+
+            Icon(
+                imageVector = imageVector,
+                contentDescription = null,
+                modifier = Modifier.size(60.dp),
+                tint = tint
+            )
+        }
+    }
+}
+
+@Composable
+private fun MetronomePlayButtonBar(
+    metronomeIsPlaying: Boolean,
+    onPlayPressed: () -> Unit,
+    onStopPressed: () -> Unit
+) {
+    val buttonModifier = Modifier
+        .size(80.dp)
+        .background(MaterialTheme.colorScheme.background)
+
+    Box(contentAlignment = Alignment.Center) {
+        Divider(modifier = Modifier.fillMaxWidth(), thickness = dimensionResource(id = R.dimen.border_width_medium))
+        if (!metronomeIsPlaying) {
+            IconButton(onClick = onPlayPressed, modifier = buttonModifier) {
+                Icon(
+                    imageVector = Icons.Rounded.PlayCircle,
+                    contentDescription = null,
+                    modifier = buttonModifier,
+                    tint = MaterialTheme.colorScheme.surfaceTint
+                )
             }
-        },
-        actions = {
-            if (currentScreen == MetronomeScreen.Home) {
-                IconButton(onClick = onTrackListButtonClicked) {
-                    Icon(
-                        imageVector = Icons.Filled.List,
-                        contentDescription = stringResource(id = R.string.track_list_button)
-                    )
-                }
-                IconButton(onClick = onSettingsButtonClicked) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = stringResource(id = R.string.settings_button)
-                    )
-                }
+        } else {
+            IconButton(onClick = onStopPressed, modifier = buttonModifier) {
+                Icon(
+                    imageVector = Icons.Rounded.StopCircle,
+                    contentDescription = null,
+                    modifier = buttonModifier,
+                    tint = MaterialTheme.colorScheme.error
+                )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HomeScreenBodyPreview() {
+    HomeScreenBody(
+        metronomeConfig = MetronomeConfig(),
+        metronomeIsPlaying = false,
+        metronomeCount = 0,
+        onPlayPressed = { },
+        onStopPressed = { },
+        onBpmChanged = { },
+        onTimeSignatureChanged = { },
+        onNoteValuePicked = { }
     )
 }

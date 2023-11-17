@@ -21,6 +21,9 @@ class HomeViewModel(
     private val _metronomePlaybackState = MutableStateFlow(false)
     val metronomeIsPlaying = _metronomePlaybackState.asStateFlow()
 
+    private val _metronomeTickCounter = MutableStateFlow(0)
+    val metronomeTickCounter = _metronomeTickCounter.asStateFlow()
+
     fun updateMetronomeConfig(metronomeConfig: MetronomeConfig) {
         _metronomeConfig.value = metronomeConfig
     }
@@ -53,17 +56,16 @@ class HomeViewModel(
         _metronomePlaybackState.value = false
     }
 
-    override fun onStartTicks() {
-        println("Ticks have started!")
+    override fun onStartTicks(tickCount: Int) {
+        _metronomeTickCounter.value = tickCount
     }
 
-    override fun onTick() {
-        // TODO: update internal state here which UI can use to update its state
-        println("Tick..")
+    override fun onTick(tickCount: Int) {
+        _metronomeTickCounter.value = tickCount
     }
 
     override fun onStopTicks() {
-        println("Ticks have stopped!")
+        _metronomeTickCounter.value = 0
     }
 
 }
