@@ -106,7 +106,7 @@ class MetronomeService : Service(), TickListener {
         fun getService(): MetronomeService = this@MetronomeService
     }
 
-    override fun onStartTicks(tickCount: Int) { listener?.onStartTicks(tickCount) }
+    override fun onStartTicks() { listener?.onStartTicks() }
     override fun onTick(tickCount: Int) { listener?.onTick(tickCount) }
     override fun onStopTicks() { listener?.onStopTicks() }
 

@@ -72,8 +72,7 @@ class HomeViewModel(
         }
     }
 
-    override fun onStartTicks(tickCount: Int) {
-        _metronomeTickCounter.value = tickCount
+    override fun onStartTicks() {
         _metronomeIsPlaying.value = true
     }
 

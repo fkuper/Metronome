@@ -16,10 +16,12 @@ class MetronomeEngine(context: Context) {
 
     private var metronomeConfig = MetronomeConfig()
     private var delayIntervalInMilliSeconds: Long = 500
-    private var tickCounter: Int = -1
 
     private var tickTimer: Timer? = null
     private var listener: TickListener? = null
+
+    private var soundTickCounter: Int = -1
+    private var numberOfSoundTicks: Int = -1
 
     init {
         val audioAttributes = AudioAttributes
@@ -41,16 +43,17 @@ class MetronomeEngine(context: Context) {
     fun start(config: MetronomeConfig) {
         metronomeConfig = config
         updateDelayInterval()
+        updateNumberOfSoundTicks()
 
         tickTimer = Timer("metronome_timer", true)
         tickTimer?.scheduleAtFixedRate(RunTask(), 0, delayIntervalInMilliSeconds)
 
-        listener?.onStartTicks(tickCounter)
+        listener?.onStartTicks()
     }
 
     fun reset() {
         tickTimer?.cancel()
-        tickCounter = -1
+        soundTickCounter = -1
         listener?.onStopTicks()
     }
 
@@ -60,25 +63,34 @@ class MetronomeEngine(context: Context) {
 
     private fun updateDelayInterval() {
         val beatsPerSecond = metronomeConfig.bpm.toFloat() / 60F
-        val delayInSeconds = 1F / beatsPerSecond
+        val delayInSeconds = (1F / beatsPerSecond) / metronomeConfig.noteValue.delayDivisor
         val delayInMilliSeconds = (delayInSeconds * 1000).toLong()
 
         delayIntervalInMilliSeconds = delayInMilliSeconds
     }
 
+    private fun updateNumberOfSoundTicks() {
+        numberOfSoundTicks = metronomeConfig.timeSignature.upper * metronomeConfig.noteValue.delayDivisor
+    }
+
     inner class RunTask : TimerTask() {
         override fun run() {
-            advanceByOneTick()
+            advanceSoundTick()
+            if (shouldAdvanceOneTick) {
+                listener?.onTick(soundTickCounter / metronomeConfig.noteValue.delayDivisor)
+            }
             playTickSound()
         }
 
-        private fun advanceByOneTick() {
-            tickCounter = (tickCounter + 1) % metronomeConfig.timeSignature.upper
-            listener?.onTick(tickCounter)
+        private val shouldAdvanceOneTick: Boolean
+            get() = (soundTickCounter % metronomeConfig.noteValue.delayDivisor) == 0
+
+        private fun advanceSoundTick() {
+            soundTickCounter = (soundTickCounter + 1) % numberOfSoundTicks
         }
 
         private fun playTickSound() {
-            val soundId = if (tickCounter == 0) soundIdAccent else soundIdNormal
+            val soundId = if (soundTickCounter == 0) soundIdAccent else soundIdNormal
             soundPool.play(soundId, 1F, 1F, 1, 0, 1F)
         }
     }

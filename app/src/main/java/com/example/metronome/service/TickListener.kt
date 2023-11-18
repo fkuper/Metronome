@@ -4,7 +4,7 @@ interface TickListener {
     /**
      * Called when the engine starts.
      */
-    fun onStartTicks(tickCount: Int)
+    fun onStartTicks()
 
     /**
      * Called whenever the engine performs one tick.

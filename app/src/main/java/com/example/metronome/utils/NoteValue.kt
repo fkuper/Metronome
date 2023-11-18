@@ -1,5 +1,7 @@
 package com.example.metronome.utils
 
-enum class NoteValue {
-    QUARTER, EIGHTH, SIXTEENTH,
+enum class NoteValue(val delayDivisor: Int) {
+    QUARTER(delayDivisor = 1),
+    EIGHTH(delayDivisor = 2),
+    SIXTEENTH(delayDivisor = 4),
 }

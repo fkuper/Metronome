@@ -7,10 +7,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.MusicNote
-import androidx.compose.material.icons.rounded.ShoppingCart
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,17 +60,17 @@ fun NoteIcon(
 ) {
     return when (noteValue) {
         NoteValue.QUARTER -> Icon(
-            imageVector = Icons.Rounded.MusicNote,
+            painter = painterResource(id = R.drawable.quarter_note),
             contentDescription = stringResource(id = R.string.note_value_quarter),
             modifier = modifier
         )
         NoteValue.EIGHTH -> Icon(
-            imageVector = Icons.Rounded.ShoppingCart,
+            painter = painterResource(id = R.drawable.eighth_note),
             contentDescription = stringResource(id = R.string.note_value_eighth),
             modifier = modifier
         )
         NoteValue.SIXTEENTH -> Icon(
-            imageVector = Icons.Rounded.Warning,
+            painter = painterResource(id = R.drawable.sixteenth_note),
             contentDescription = stringResource(id = R.string.note_value_sixteenth),
             modifier = modifier
         )
