@@ -1,6 +1,5 @@
 package com.example.metronome.ui.home
 
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,10 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.metronome.MetronomeApplication
 import com.example.metronome.R
 import com.example.metronome.ui.components.MetronomeConfigControls
-import com.example.metronome.service.MetronomeService
 import com.example.metronome.utils.MetronomeConfig
 import com.example.metronome.utils.NoteValue
 import com.example.metronome.utils.TimeSignature
@@ -39,27 +36,13 @@ fun HomeScreen(viewModel: HomeViewModel) {
     val metronomeConfig by viewModel.metronomeConfig.collectAsState()
     val metronomeIsPlaying by viewModel.metronomeIsPlaying.collectAsState()
     val metronomeCount by viewModel.metronomeTickCounter.collectAsState()
-    val applicationContext = viewModel.getApplication<MetronomeApplication>().applicationContext
 
     HomeScreenBody(
         metronomeConfig = metronomeConfig,
         metronomeIsPlaying = metronomeIsPlaying,
         metronomeCount = metronomeCount,
-        onPlayPressed = {
-            Intent(applicationContext, MetronomeService::class.java).also {
-                it.action = MetronomeService.Action.START.name
-                it.putExtra(MetronomeService.Extra.BPM.name, metronomeConfig.bpm)
-                it.putExtra(MetronomeService.Extra.TIME_SIGNATURE.name, metronomeConfig.timeSignature)
-                it.putExtra(MetronomeService.Extra.NOTE_VALUE.name, metronomeConfig.noteValue)
-                viewModel.startMetronomeService(it)
-            }
-        },
-        onStopPressed = {
-            Intent(applicationContext, MetronomeService::class.java).also {
-                it.action = MetronomeService.Action.STOP.name
-                viewModel.stopMetronomeService(it)
-            }
-        },
+        onPlayPressed = { viewModel.startMetronomeService() },
+        onStopPressed = { viewModel.stopMetronomeService() },
         onBpmChanged = { viewModel.updateMetronomeConfig(metronomeConfig.copy(bpm = it)) },
         onTimeSignatureChanged = { viewModel.updateMetronomeConfig(metronomeConfig.copy(timeSignature = it)) },
         onNoteValuePicked = { viewModel.updateMetronomeConfig(metronomeConfig.copy(noteValue = it)) }
