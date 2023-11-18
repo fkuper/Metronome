@@ -44,7 +44,6 @@ class HomeViewModel(
         } else {
             application.startService(intent)
         }
-        _metronomePlaybackState.value = true
     }
 
     fun stopMetronomeService(intent: Intent) {
@@ -53,11 +52,11 @@ class HomeViewModel(
         } else {
             application.startService(intent)
         }
-        _metronomePlaybackState.value = false
     }
 
     override fun onStartTicks(tickCount: Int) {
         _metronomeTickCounter.value = tickCount
+        _metronomePlaybackState.value = true
     }
 
     override fun onTick(tickCount: Int) {
@@ -66,6 +65,7 @@ class HomeViewModel(
 
     override fun onStopTicks() {
         _metronomeTickCounter.value = 0
+        _metronomePlaybackState.value = false
     }
 
 }

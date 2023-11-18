@@ -1,5 +1,7 @@
 package com.example.metronome.service
 
+import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
@@ -41,15 +43,28 @@ class MetronomeService : Service(), TickListener {
         this.listener = listener
     }
 
+    @SuppressLint("LaunchActivityFromNotification")
     private fun play(config: MetronomeConfig) {
         metronomeEngine.start(config)
 
+        val intent = Intent(this, MetronomeService::class.java)
+        intent.action = Action.STOP.name
+
+        val pendingIntent = PendingIntent.getService(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val notification = NotificationCompat
             .Builder(this, "metronome_channel")
+            .setOngoing(true)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(getString(R.string.notification_title))
             .setContentText(getString(R.string.notification_text))
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(pendingIntent)
             .build()
 
         startForeground(1, notification)
