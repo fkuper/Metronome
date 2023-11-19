@@ -42,6 +42,7 @@ android {
             buildConfigField("String", "SPOTIFY_WEB_API_SECRET", apiKeyProperties.getProperty("SPOTIFY_WEB_API_SECRET"))
             buildConfigField("String", "SPOTIFY_WEB_API_CLIENT_ID", apiKeyProperties.getProperty("SPOTIFY_WEB_API_CLIENT_ID"))
             buildConfigField("String", "SPOTIFY_WEB_API_URL", apiKeyProperties.getProperty("SPOTIFY_WEB_API_URL"))
+            buildConfigField("String", "SPOTIFY_WEB_API_VERSION", apiKeyProperties.getProperty("SPOTIFY_WEB_API_VERSION"))
             buildConfigField("String", "SPOTIFY_WEB_API_AUTH_URL", apiKeyProperties.getProperty("SPOTIFY_WEB_API_AUTH_URL"))
         }
     }

@@ -7,15 +7,19 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Query
 import java.util.Base64
 
 object SpotifyApiClient {
 
-    private const val AUTH_URL = BuildConfig.SPOTIFY_WEB_API_AUTH_URL
-    private const val URL = BuildConfig.SPOTIFY_WEB_API_URL
+    private const val AUTH_URL =
+        BuildConfig.SPOTIFY_WEB_API_AUTH_URL
+    private const val URL =
+        "${BuildConfig.SPOTIFY_WEB_API_URL}/${BuildConfig.SPOTIFY_WEB_API_VERSION}/"
 
     private val interceptor = HttpLoggingInterceptor().apply {
         setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -69,6 +73,17 @@ interface SpotifyApiAuth {
 
 interface SpotifyWebApi {
 
-    // TODO: implement web api call to get track for title name here
+    @GET("search")
+    suspend fun search(
+        @Header("Authorization") auth: String,
+        @Query("q") query: String,
+        @Query("type") type: String = "track"
+    ): SpotifySearchResult
+
+    @GET("audio-features")
+    suspend fun getTracksAudioFeatures(
+        @Header("Authorization") auth: String,
+        @Query("id") tracksSpotifyId: String
+    ): SpotifyTrackAudioFeatures
 
 }

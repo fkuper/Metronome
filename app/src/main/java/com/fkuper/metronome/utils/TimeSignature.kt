@@ -13,5 +13,25 @@ enum class TimeSignature(val upper: Int, val lower: Int) {
     TEN_FOUR(10, 4),
     ELEVEN_FOUR(11, 4),
     TWELVE_FOUR(12, 4),
-    THIRTEEN_FOUR(13, 4),
+    THIRTEEN_FOUR(13, 4);
+
+    companion object {
+
+        /**
+         * Used for converting from Spotify's Web API time signature notation to ours.
+         *
+         * See here for more info:
+         * https://developer.spotify.com/documentation/web-api/reference/get-several-audio-features
+         */
+        fun fromInt(input: Int): TimeSignature? {
+            return when (input) {
+                3 -> THREE_FOUR
+                4 -> FOUR_FOUR
+                5 -> FIVE_FOUR
+                6 -> SIX_FOUR
+                7 -> SEVEN_FOUR
+                else -> null
+            }
+        }
+    }
 }
