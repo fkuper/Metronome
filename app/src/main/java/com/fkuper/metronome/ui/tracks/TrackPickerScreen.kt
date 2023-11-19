@@ -25,12 +25,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.MoreHoriz
-import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
@@ -41,13 +39,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fkuper.metronome.R
 import com.fkuper.metronome.ui.AppViewModelProvider
 import com.fkuper.metronome.ui.components.NoteIcon
+import com.fkuper.metronome.ui.components.TrackRow
 import com.fkuper.metronome.utils.NoteValue
 import kotlinx.coroutines.launch
 
@@ -85,6 +83,8 @@ private fun TrackPickerBody(
     onTrackDeleteClicked: (Track) -> Unit,
     onTrackPicked: (Track) -> Unit
 ) {
+    var openDropDownMenu by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
@@ -98,10 +98,33 @@ private fun TrackPickerBody(
             ) {
                 items(tracks) { track ->
                     TrackRow(
-                        track = track,
-                        onTrackEditClicked = { onTrackEditClicked(it) },
-                        onTrackDeleteClicked = { onTrackDeleteClicked(it) },
-                        onTrackPicked = { onTrackPicked(it) }
+                        title = track.title,
+                        artist = track.artist,
+                        onCardClicked = { onTrackPicked(track) },
+                        onInteractionButtonClicked = { openDropDownMenu = true },
+                        interactionButtonIcon = Icons.Rounded.MoreHoriz,
+                        detailView = { TrackMetronomeConfigCard(track = track) },
+                        buttonDropDown = {
+                            DropdownMenu(
+                                expanded = openDropDownMenu,
+                                onDismissRequest = { openDropDownMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(text = "Edit track") },
+                                    onClick = {
+                                        onTrackEditClicked(track)
+                                        openDropDownMenu = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = "Delete track", color = MaterialTheme.colorScheme.error) },
+                                    onClick = {
+                                        onTrackDeleteClicked(track)
+                                        openDropDownMenu = false
+                                    }
+                                )
+                            }
+                        }
                     )
                 }
             }
@@ -110,68 +133,11 @@ private fun TrackPickerBody(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TrackRow(
-    track: Track,
-    onTrackPicked: (Track) -> Unit,
-    onTrackEditClicked: (Track) -> Unit,
-    onTrackDeleteClicked: (Track) -> Unit,
-) {
-    Card(
-        onClick = { onTrackPicked(track) },
-        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.padding_large))
-                .height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TrackTitleAndArtistColumn(
-                track = track,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1F)
-            )
-            TrackMetronomeConfigCard(
-                track = track,
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.padding_small))
-            )
-            OpenTrackRowMenuButton(
-                onTrackEditClicked = { onTrackEditClicked(track) },
-                onTrackDeleteClicked = { onTrackDeleteClicked(track) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun TrackTitleAndArtistColumn(
+private fun TrackMetronomeConfigCard(
     track: Track,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Text(
-            text = track.title,
-            style = MaterialTheme.typography.titleLarge,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1
-        )
-        Spacer(modifier = Modifier.weight(1.0f))
-        Text(
-            text = track.artist,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.secondary,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1
-        )
-    }
-}
-
-@Composable
-private fun TrackMetronomeConfigCard(track: Track, modifier: Modifier = Modifier) {
     ElevatedCard(modifier = modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -244,42 +210,6 @@ private fun ButtonBar(
             }
         }
         Spacer(modifier = Modifier.weight(1.0f))
-    }
-}
-
-@Composable
-private fun OpenTrackRowMenuButton(
-    onTrackEditClicked: () -> Unit,
-    onTrackDeleteClicked: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var openDropDownMenu by remember { mutableStateOf(false) }
-
-    IconButton(
-        onClick = { openDropDownMenu = true },
-        modifier = modifier
-    ) {
-        Icon(imageVector = Icons.Rounded.MoreHoriz, contentDescription = null)
-
-        DropdownMenu(
-            expanded = openDropDownMenu,
-            onDismissRequest = { openDropDownMenu = false }
-        ) {
-            DropdownMenuItem(
-                text = { Text(text = "Edit track") },
-                onClick = {
-                    onTrackEditClicked()
-                    openDropDownMenu = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text(text = "Delete track", color = MaterialTheme.colorScheme.error) },
-                onClick = {
-                    onTrackDeleteClicked()
-                    openDropDownMenu = false
-                }
-            )
-        }
     }
 }
 

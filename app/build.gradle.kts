@@ -77,6 +77,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("com.chargemap.compose:numberpicker:1.0.3")
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     // Optional - Add full set of material icons
     implementation("androidx.compose.material:material-icons-extended")
