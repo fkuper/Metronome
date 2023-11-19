@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.metronome"
+    namespace = "com.fkuper.metronome"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.metronome"
+        applicationId = "com.fkuper.metronome"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
