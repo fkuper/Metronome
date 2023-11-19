@@ -1,7 +1,15 @@
+import java.io.FileInputStream
+import java.util.*
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+}
+
+val apiKeyPropertiesFile = rootProject.file("apikey.properties")
+val apiKeyProperties = Properties().apply {
+    load(FileInputStream(apiKeyPropertiesFile))
 }
 
 android {
@@ -29,6 +37,13 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+        defaultConfig {
+            buildConfigField("String", "SPOTIFY_WEB_API_SECRET", apiKeyProperties.getProperty("SPOTIFY_WEB_API_SECRET"))
+            buildConfigField("String", "SPOTIFY_WEB_API_CLIENT_ID", apiKeyProperties.getProperty("SPOTIFY_WEB_API_CLIENT_ID"))
+            buildConfigField("String", "SPOTIFY_WEB_API_URL", apiKeyProperties.getProperty("SPOTIFY_WEB_API_URL"))
+            buildConfigField("String", "SPOTIFY_WEB_API_AUTH_URL", apiKeyProperties.getProperty("SPOTIFY_WEB_API_AUTH_URL"))
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -38,6 +53,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
@@ -72,6 +88,8 @@ dependencies {
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
     // Room
     val roomVersion = "2.6.0"

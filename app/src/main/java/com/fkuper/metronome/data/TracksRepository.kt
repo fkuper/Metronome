@@ -14,6 +14,6 @@ interface TracksRepository {
 
     fun getAllTracks(): Flow<List<Track>>
 
-    fun searchForTrack(title: String): Flow<List<Track>>
+    suspend fun searchForTrack(title: String): Flow<List<Track>>
 
 }

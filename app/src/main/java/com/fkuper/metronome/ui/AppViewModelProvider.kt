@@ -11,6 +11,7 @@ import com.fkuper.metronome.ui.home.HomeViewModel
 import com.fkuper.metronome.ui.tracks.TrackCreatorViewModel
 import com.fkuper.metronome.ui.tracks.TrackEditorViewModel
 import com.fkuper.metronome.ui.tracks.TrackPickerViewModel
+import com.fkuper.metronome.ui.tracks.TrackSearcherViewModel
 
 /**
  * Provides Factory to create instance of ViewModel for the entire Metronome app
@@ -31,6 +32,9 @@ object AppViewModelProvider {
                 this.createSavedStateHandle(),
                 metronomeApplication().container.tracksRepository
             )
+        }
+        initializer {
+            TrackSearcherViewModel(metronomeApplication().container.tracksRepository)
         }
     }
 }

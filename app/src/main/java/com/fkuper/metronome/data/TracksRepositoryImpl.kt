@@ -1,8 +1,11 @@
 package com.fkuper.metronome.data
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class TracksRepositoryImpl(private val trackDao: TrackDao) : TracksRepository {
+
+    private var apiAccessToken: MySpotifyWebApiAccessToken? = null
 
     override suspend fun insert(track: Track) = trackDao.insert(track)
 
@@ -14,8 +17,13 @@ class TracksRepositoryImpl(private val trackDao: TrackDao) : TracksRepository {
 
     override fun getAllTracks(): Flow<List<Track>> = trackDao.getAllTracks()
 
-    override fun searchForTrack(title: String): Flow<List<Track>> {
-        TODO("Not yet implemented")
+    override suspend fun searchForTrack(title: String): Flow<List<Track>> {
+        if (apiAccessToken == null || apiAccessToken?.isValid == false) {
+            apiAccessToken = SpotifyApiClient.auth.getAccessToken().toMyImpl()
+        }
+
+        // TODO: request tracks here
+        return flowOf()
     }
 
 }
