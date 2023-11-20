@@ -6,28 +6,47 @@ import androidx.lifecycle.ViewModel
 import com.fkuper.metronome.data.SpotifyTrack
 import com.fkuper.metronome.data.TracksRepository
 import com.fkuper.metronome.data.toMetronomeTrack
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class TrackSearcherViewModel(private val tracksRepository: TracksRepository) : ViewModel() {
 
     val tracksMap: SnapshotStateMap<String, SpotifyTrackUiState> = mutableStateMapOf()
+    val searchState = MutableStateFlow<SearchState>(SearchState.START)
+    val addTrackState = MutableStateFlow<AddSpotifyTrackState>(AddSpotifyTrackState.START)
 
     suspend fun searchForTrackByTitle(title: String) {
-        val searchResultMap = tracksRepository.searchForTrack(title)
-            .associateBy({ it.id }, { SpotifyTrackUiState(it) })
+        searchState.value = SearchState.LOADING
 
-        tracksMap.putAll(searchResultMap)
-        tracksMap.forEach {
-            tracksMap[it.key] = it.value.copy(isInPlaylist = isInPlaylist(it.value.spotifyTrack))
-        }
+        tracksRepository.searchForTrack(title)
+            .onSuccess { searchResult ->
+                val searchResultMap = searchResult.tracks.items
+                    .associateBy({ it.id }, { SpotifyTrackUiState(it) })
+                tracksMap.putAll(searchResultMap)
+                tracksMap.forEach {
+                    tracksMap[it.key] = it.value.copy(isInPlaylist = isInPlaylist(it.value.spotifyTrack))
+                }
+                searchState.value = SearchState.SUCCESS
+            }
+            .onFailure {
+                searchState.emit(SearchState.FAILURE(it.localizedMessage))
+            }
     }
 
     suspend fun addTrackToPlaylist(spotifyTrack: SpotifyTrack) {
-        val audioFeatures = tracksRepository.getSpotifyTracksAudioFeatures(spotifyTrack.id)
-        val metronomeTrack = audioFeatures.toMetronomeTrack(spotifyTrack)
-        tracksRepository.insert(metronomeTrack)
+        addTrackState.value = AddSpotifyTrackState.LOADING
 
-        val updatedValue = tracksMap[spotifyTrack.id]?.copy(isInPlaylist = true)
-        if (updatedValue != null) tracksMap[spotifyTrack.id] = updatedValue
+        tracksRepository.getSpotifyTracksAudioFeatures(spotifyTrack.id)
+            .onSuccess { audioFeatures ->
+                val metronomeTrack = audioFeatures.toMetronomeTrack(spotifyTrack)
+                tracksRepository.insert(metronomeTrack)
+
+                val updatedValue = tracksMap[spotifyTrack.id]?.copy(isInPlaylist = true)
+                if (updatedValue != null) tracksMap[spotifyTrack.id] = updatedValue
+                addTrackState.value = AddSpotifyTrackState.SUCCESS
+            }
+            .onFailure {
+                addTrackState.emit(AddSpotifyTrackState.FAILURE(it.localizedMessage))
+            }
     }
 
     suspend fun removeTrackFromPlaylist(spotifyTrack: SpotifyTrack) {
@@ -47,3 +66,17 @@ data class SpotifyTrackUiState(
     val spotifyTrack: SpotifyTrack,
     val isInPlaylist: Boolean = false
 )
+
+sealed class AddSpotifyTrackState {
+    data object START : AddSpotifyTrackState()
+    data object LOADING : AddSpotifyTrackState()
+    data object SUCCESS : AddSpotifyTrackState()
+    data class FAILURE(val message: String?) : AddSpotifyTrackState()
+}
+
+sealed class SearchState {
+    data object START : SearchState()
+    data object LOADING : SearchState()
+    data object SUCCESS : SearchState()
+    data class FAILURE(val message: String?) : SearchState()
+}

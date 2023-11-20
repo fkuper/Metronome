@@ -28,7 +28,6 @@ data class MySpotifyWebApiAccessToken(
     val expiresIn: Int,
     private val dateRequested: Date = Date()
 ) {
-    // TODO: test this
     val isValid: Boolean get() {
         val currentDate = Date()
         val validUntilDate = addSecondsTo(dateRequested, expiresIn)

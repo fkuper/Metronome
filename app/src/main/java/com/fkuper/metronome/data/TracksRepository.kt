@@ -18,8 +18,8 @@ interface TracksRepository {
 
     fun getAllTracks(): Flow<List<Track>>
 
-    suspend fun searchForTrack(title: String): List<SpotifyTrack>
+    suspend fun searchForTrack(title: String): Result<SpotifySearchResult>
 
-    suspend fun getSpotifyTracksAudioFeatures(id: String): SpotifyTrackAudioFeatures
+    suspend fun getSpotifyTracksAudioFeatures(id: String): Result<SpotifyTrackAudioFeatures>
 
 }

@@ -1,6 +1,7 @@
 package com.fkuper.metronome.data
 
 import com.fkuper.metronome.BuildConfig
+import com.fkuper.metronome.utils.ResultCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -23,7 +24,7 @@ object SpotifyApiClient {
         "${BuildConfig.SPOTIFY_WEB_API_URL}/${BuildConfig.SPOTIFY_WEB_API_VERSION}/"
 
     private val interceptor = HttpLoggingInterceptor().apply {
-        setLevel(HttpLoggingInterceptor.Level.BODY)
+        setLevel(HttpLoggingInterceptor.Level.BASIC)
     }
 
     private val client = OkHttpClient.Builder()
@@ -34,6 +35,7 @@ object SpotifyApiClient {
         Retrofit.Builder()
             .baseUrl(AUTH_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(ResultCallAdapterFactory())
             .client(client)
             .build()
             .create(SpotifyApiAuth::class.java)
@@ -43,6 +45,7 @@ object SpotifyApiClient {
         Retrofit.Builder()
             .baseUrl(URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(ResultCallAdapterFactory())
             .client(client)
             .build()
             .create(SpotifyWebApi::class.java)
@@ -79,12 +82,12 @@ interface SpotifyWebApi {
         @Header("Authorization") auth: String,
         @Query("q") query: String,
         @Query("type") type: String = "track"
-    ): SpotifySearchResult
+    ): Result<SpotifySearchResult>
 
     @GET("audio-features/{id}")
     suspend fun getTracksAudioFeatures(
         @Header("Authorization") auth: String,
         @Path("id") tracksSpotifyId: String
-    ): SpotifyTrackAudioFeatures
+    ): Result<SpotifyTrackAudioFeatures>
 
 }

@@ -14,18 +14,13 @@ class TracksRepositoryImpl(private val trackDao: TrackDao) : TracksRepository {
     override suspend fun getTrack(spotifyId: String): Track? = trackDao.getTrack(spotifyId)
     override fun getAllTracks(): Flow<List<Track>> = trackDao.getAllTracks()
 
-    override suspend fun searchForTrack(title: String): List<SpotifyTrack> {
+    override suspend fun searchForTrack(title: String): Result<SpotifySearchResult> {
         validateAccessToken()
-
-        // TODO: error handling?
-        val result = SpotifyApiClient.api.search(auth = authString, query = title)
-        return result.tracks.items
+        return SpotifyApiClient.api.search(auth = authString, query = title)
     }
 
-    override suspend fun getSpotifyTracksAudioFeatures(id: String): SpotifyTrackAudioFeatures {
+    override suspend fun getSpotifyTracksAudioFeatures(id: String): Result<SpotifyTrackAudioFeatures> {
         validateAccessToken()
-
-        // TODO: error handling?
         return SpotifyApiClient.api.getTracksAudioFeatures(auth = authString, tracksSpotifyId = id)
     }
 
