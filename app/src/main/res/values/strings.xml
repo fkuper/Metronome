@@ -13,6 +13,12 @@
     <string name="search_track_button">Search for a track</string>
     <string name="create_new_track_button">Create a new track</string>
     <string name="pick_track_to_play_button">Pick this track to play</string>
+    <string name="empty_playlist_icon">Your playlist is empty.</string>
+    <string name="empty_playlist_text">
+        "Looks like you don't have any tracks in your playlist yet.
+
+        Start by adding some of your favourite songs to practice:"
+    </string>
 
     <string name="title_input_label">Track title</string>
     <string name="artist_input_label">Artist name</string>

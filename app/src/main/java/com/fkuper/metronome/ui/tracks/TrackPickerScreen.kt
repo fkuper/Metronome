@@ -1,6 +1,7 @@
 package com.fkuper.metronome.ui.tracks
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,12 +27,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.MoreHoriz
+import androidx.compose.material.icons.rounded.PlaylistRemove
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
@@ -39,8 +43,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -85,14 +91,19 @@ private fun TrackPickerBody(
     onTrackDeleteClicked: (Track) -> Unit,
     onTrackPicked: (Track) -> Unit
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        if (tracks.isEmpty()) {
-            // TODO: add a better view here when if list is empty...
-            Text("Oops! Looks like you don't have any tracks yet.")
-        } else {
+    if (tracks.isEmpty()) {
+        EmptyPlaylistView(
+            onSearchTrackButtonClicked = onSearchTrackButtonClicked,
+            onCreateTrackButtonClicked = onCreateTrackButtonClicked,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(dimensionResource(id = R.dimen.padding_medium))
+        )
+    } else {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
             LazyColumn(
                 modifier = Modifier.matchParentSize()
             ) {
@@ -105,8 +116,48 @@ private fun TrackPickerBody(
                     )
                 }
             }
+            ButtonBar(onSearchTrackButtonClicked, onCreateTrackButtonClicked)
         }
-        ButtonBar(onSearchTrackButtonClicked, onCreateTrackButtonClicked)
+    }
+}
+
+@Composable
+private fun EmptyPlaylistView(
+    onCreateTrackButtonClicked: () -> Unit,
+    onSearchTrackButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.empty_playlist_text),
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        )
+        EmptyPlaylistButtons(
+            onSearchTrackButtonClicked = onSearchTrackButtonClicked,
+            onCreateTrackButtonClicked = onCreateTrackButtonClicked,
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.PlaylistRemove,
+                contentDescription = stringResource(id = R.string.empty_playlist_icon),
+                modifier = Modifier
+                    .size(200.dp)
+                    .alpha(0.3F)
+                    .padding(dimensionResource(id = R.dimen.padding_medium)),
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        }
     }
 }
 
@@ -178,6 +229,36 @@ private fun TrackMetronomeConfigCard(
                     style = MaterialTheme.typography.titleMedium
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun EmptyPlaylistButtons(
+    onSearchTrackButtonClicked: () -> Unit,
+    onCreateTrackButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier) {
+        FilledTonalButton(
+            onClick = onSearchTrackButtonClicked,
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Search,
+                contentDescription = stringResource(id = R.string.search_track_button),
+            )
+            Text("Search")
+        }
+        FilledTonalButton(
+            onClick = onCreateTrackButtonClicked,
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = stringResource(id = R.string.create_new_track_button),
+            )
+            Text("Create")
         }
     }
 }
