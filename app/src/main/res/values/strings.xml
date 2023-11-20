@@ -29,4 +29,7 @@
 
     <string name="notification_title">Metronome is currently running…</string>
     <string name="notification_text">Tap here to stop it.</string>
+
+    <string name="search_prompt">Song title</string>
+    <string name="search_prompt_icon">Search for songs to practice here</string>
 </resources>
