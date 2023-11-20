@@ -20,8 +20,14 @@ interface TrackDao {
     @Delete
     suspend fun delete(track: Track)
 
+    @Query("DELETE FROM tracks WHERE spotifyId=:spotifyId")
+    suspend fun delete(spotifyId: String)
+
     @Query("SELECT * FROM tracks WHERE id=:id")
     fun getTrack(id: Int): Flow<Track?>
+
+    @Query("SELECT * FROM tracks WHERE spotifyId=:spotifyId")
+    suspend fun getTrack(spotifyId: String): Track?
 
     @Query("SELECT * FROM tracks ORDER BY title ASC")
     fun getAllTracks(): Flow<List<Track>>

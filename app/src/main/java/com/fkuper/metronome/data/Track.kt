@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName
 data class Track(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    val spotifyId: String? = null,
     val artist: String,
     val title: String,
     val bpm: Int = 120,
@@ -29,7 +30,7 @@ data class SpotifyTrackSearchResult(
 
 data class SpotifyTrack(
     @SerializedName("id")
-    val spotifyId: String,
+    val id: String,
     @SerializedName("name")
     val title: String,
     @SerializedName("artists")
@@ -66,6 +67,7 @@ data class SpotifyTrackAudioFeatures(
 
 fun SpotifyTrackAudioFeatures.toMetronomeTrack(spotifyTrack: SpotifyTrack): Track {
     return Track(
+        spotifyId = spotifyTrack.id,
         artist = spotifyTrack.artists.first().name,
         title = spotifyTrack.title,
         bpm = bpm.toInt(),

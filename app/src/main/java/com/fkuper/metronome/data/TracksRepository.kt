@@ -10,7 +10,11 @@ interface TracksRepository {
 
     suspend fun delete(track: Track)
 
+    suspend fun delete(spotifyId: String)
+
     fun getTrack(id: Int): Flow<Track?>
+
+    suspend fun getTrack(spotifyId: String): Track?
 
     fun getAllTracks(): Flow<List<Track>>
 

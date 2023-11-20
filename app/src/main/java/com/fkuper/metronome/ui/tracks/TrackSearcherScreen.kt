@@ -26,7 +26,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.fkuper.metronome.R
-import com.fkuper.metronome.data.SpotifyTrack
 import com.fkuper.metronome.ui.AppViewModelProvider
 import com.fkuper.metronome.ui.components.TrackTitleAndArtistColumn
 import kotlinx.coroutines.launch
@@ -54,10 +52,9 @@ fun TrackSearcherScreen(
     viewModel: TrackSearcherViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val viewModelScope = rememberCoroutineScope()
-    val tracks = viewModel.spotifyTracks.observeAsState()
 
     TrackSearcherScreenBody(
-        tracks = tracks.value,
+        tracks = viewModel.tracksMap.values.toList(),
         onSearchForTracks = {
             viewModelScope.launch {
                 viewModel.searchForTrackByTitle(it)
@@ -65,11 +62,13 @@ fun TrackSearcherScreen(
         },
         onAddClicked = {
             viewModelScope.launch {
-                viewModel.addTrackToPlaylist(it)
+                viewModel.addTrackToPlaylist(it.spotifyTrack)
             }
         },
         onRemoveClicked = {
-            // TODO implement me
+            viewModelScope.launch {
+                viewModel.removeTrackFromPlaylist(it.spotifyTrack)
+            }
         },
         modifier = Modifier.fillMaxSize()
     )
@@ -77,10 +76,10 @@ fun TrackSearcherScreen(
 
 @Composable
 private fun TrackSearcherScreenBody(
-    tracks: List<SpotifyTrack>?,
+    tracks: List<SpotifyTrackUiState>?,
     onSearchForTracks: (String) -> Unit,
-    onAddClicked: (SpotifyTrack) -> Unit,
-    onRemoveClicked: (SpotifyTrack) -> Unit,
+    onAddClicked: (SpotifyTrackUiState) -> Unit,
+    onRemoveClicked: (SpotifyTrackUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -110,30 +109,28 @@ private fun TrackSearcherScreenBody(
 
 @Composable
 private fun SpotifyTrackRow(
-    track: SpotifyTrack,
+    track: SpotifyTrackUiState,
     onAddClicked: () -> Unit,
     onRemoveClicked: () -> Unit,
 ) {
-    var didAddSongToLibrary by remember { mutableStateOf(false) }
-
     Row(
         modifier = Modifier
             .height(IntrinsicSize.Min)
             .padding(dimensionResource(id = R.dimen.padding_small))
     ) {
-        AlbumArtView(url = track.album.images.first().url)
+        AlbumArtView(url = track.spotifyTrack.album.images.first().url)
         TrackTitleAndArtistCard(
-            title = track.title,
-            artist = track.artists.first().name,
+            title = track.spotifyTrack.title,
+            artist = track.spotifyTrack.artists.first().name,
             onInteractionButtonClicked = {
-                didAddSongToLibrary = if (!didAddSongToLibrary) {
-                    onAddClicked(); true
+                if (!track.isInPlaylist) {
+                    onAddClicked()
                 } else {
-                    onRemoveClicked(); false
+                    onRemoveClicked()
                 }
             },
             interactionButtonIcon =
-                if (!didAddSongToLibrary) {
+                if (!track.isInPlaylist) {
                     Icons.Rounded.Add
                 } else {
                     Icons.Rounded.Remove
