@@ -66,7 +66,7 @@ data class SpotifyTrackAudioFeatures(
 
 fun SpotifyTrackAudioFeatures.toMetronomeTrack(spotifyTrack: SpotifyTrack): Track {
     return Track(
-        artist = spotifyTrack.artists.joinToString(", "),
+        artist = spotifyTrack.artists.first().name,
         title = spotifyTrack.title,
         bpm = bpm.toInt(),
         timeSignature = TimeSignature.fromInt(timeSignature) ?: TimeSignature.FOUR_FOUR

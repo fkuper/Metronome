@@ -17,16 +17,28 @@ class TracksRepositoryImpl(private val trackDao: TrackDao) : TracksRepository {
     override fun getAllTracks(): Flow<List<Track>> = trackDao.getAllTracks()
 
     override suspend fun searchForTrack(title: String): List<SpotifyTrack> {
+        validateAccessToken()
+
+        // TODO: error handling?
+        val result = SpotifyApiClient.api.search(auth = authString, query = title)
+        return result.tracks.items
+    }
+
+    override suspend fun getSpotifyTracksAudioFeatures(id: String): SpotifyTrackAudioFeatures {
+        validateAccessToken()
+
+        // TODO: error handling?
+        return SpotifyApiClient.api.getTracksAudioFeatures(auth = authString, tracksSpotifyId = id)
+    }
+
+    private suspend fun validateAccessToken() {
         if (apiAccessToken == null || apiAccessToken?.isValid == false) {
             apiAccessToken = SpotifyApiClient.auth.getAccessToken().toMyImpl()
         }
+    }
 
-        // TODO: error handling?
-        val result = SpotifyApiClient.api.search(
-            auth = "Bearer ${apiAccessToken!!.token}",
-            query = title
-        )
-        return result.tracks.items
+    private val authString: String get() {
+        return "Bearer ${apiAccessToken?.token}"
     }
 
 }

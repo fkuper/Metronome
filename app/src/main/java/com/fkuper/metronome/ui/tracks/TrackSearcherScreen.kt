@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,8 +18,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -42,7 +46,7 @@ import coil.compose.AsyncImage
 import com.fkuper.metronome.R
 import com.fkuper.metronome.data.SpotifyTrack
 import com.fkuper.metronome.ui.AppViewModelProvider
-import com.fkuper.metronome.ui.components.TrackRow
+import com.fkuper.metronome.ui.components.TrackTitleAndArtistColumn
 import kotlinx.coroutines.launch
 
 @Composable
@@ -60,7 +64,9 @@ fun TrackSearcherScreen(
             }
         },
         onAddClicked = {
-            // TODO implement me
+            viewModelScope.launch {
+                viewModel.addTrackToPlaylist(it)
+            }
         },
         onRemoveClicked = {
             // TODO implement me
@@ -73,8 +79,8 @@ fun TrackSearcherScreen(
 private fun TrackSearcherScreenBody(
     tracks: List<SpotifyTrack>?,
     onSearchForTracks: (String) -> Unit,
-    onAddClicked: () -> Unit,
-    onRemoveClicked: () -> Unit,
+    onAddClicked: (SpotifyTrack) -> Unit,
+    onRemoveClicked: (SpotifyTrack) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -94,8 +100,8 @@ private fun TrackSearcherScreenBody(
             items(tracks) { track ->
                 SpotifyTrackRow(
                     track = track,
-                    onAddClicked = onAddClicked,
-                    onRemoveClicked = onRemoveClicked
+                    onAddClicked = { onAddClicked(track) },
+                    onRemoveClicked = { onRemoveClicked(track) }
                 )
             }
         }
@@ -116,7 +122,7 @@ private fun SpotifyTrackRow(
             .padding(dimensionResource(id = R.dimen.padding_small))
     ) {
         AlbumArtView(url = track.album.images.first().url)
-        TrackRow(
+        TrackTitleAndArtistCard(
             title = track.title,
             artist = track.artists.first().name,
             onInteractionButtonClicked = {
@@ -133,6 +139,36 @@ private fun SpotifyTrackRow(
                     Icons.Rounded.Remove
                 }
         )
+    }
+}
+
+@Composable
+private fun TrackTitleAndArtistCard(
+    title: String,
+    artist: String,
+    onInteractionButtonClicked: () -> Unit,
+    interactionButtonIcon: ImageVector
+) {
+    Card(
+        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.padding_large))
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TrackTitleAndArtistColumn(
+                title = title,
+                artist = artist,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1F)
+            )
+            IconButton(onClick = onInteractionButtonClicked) {
+                Icon(imageVector = interactionButtonIcon, contentDescription = null)
+            }
+        }
     }
 }
 

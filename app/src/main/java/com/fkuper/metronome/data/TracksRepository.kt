@@ -16,4 +16,6 @@ interface TracksRepository {
 
     suspend fun searchForTrack(title: String): List<SpotifyTrack>
 
+    suspend fun getSpotifyTracksAudioFeatures(id: String): SpotifyTrackAudioFeatures
+
 }
