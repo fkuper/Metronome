@@ -61,7 +61,7 @@ interface SpotifyApiAuth {
     suspend fun getAccessToken(
         @Field("grant_type") grant: String = "client_credentials",
         @Header("Authorization") auth: String = authCode,
-    ): SpotifyWebApiAccessToken
+    ): Result<SpotifyWebApiAccessToken>
 
     private val authCode: String get() {
         val code = "$CLIENT_ID:$API_SECRET"

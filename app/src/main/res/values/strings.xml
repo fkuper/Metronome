@@ -38,4 +38,6 @@
 
     <string name="search_prompt">Song title</string>
     <string name="search_prompt_icon">Search for songs to practice here</string>
+    <string name="add_track_to_playlist">Add this track to your playlist</string>
+    <string name="remove_track_from_playlist">Remove this track from your playlist</string>
 </resources>

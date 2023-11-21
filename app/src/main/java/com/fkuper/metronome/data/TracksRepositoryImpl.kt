@@ -1,5 +1,6 @@
 package com.fkuper.metronome.data
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 
 class TracksRepositoryImpl(private val trackDao: TrackDao) : TracksRepository {
@@ -26,7 +27,16 @@ class TracksRepositoryImpl(private val trackDao: TrackDao) : TracksRepository {
 
     private suspend fun validateAccessToken() {
         if (apiAccessToken == null || apiAccessToken?.isValid == false) {
-            apiAccessToken = SpotifyApiClient.auth.getAccessToken().toMyImpl()
+            SpotifyApiClient.auth.getAccessToken()
+                .onSuccess {
+                    apiAccessToken = it.toMyImpl()
+                }
+                .onFailure {
+                    Log.e(
+                        "${this.javaClass}",
+                        "Failed to get API access token: ${it.message}"
+                    )
+                }
         }
     }
 

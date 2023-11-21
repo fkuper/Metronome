@@ -16,14 +16,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Remove
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -37,7 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -57,10 +57,10 @@ fun TrackSearcherScreen(
 ) {
     val viewModelScope = rememberCoroutineScope()
     val searchState by viewModel.searchState.collectAsState()
-    val addTrackState by viewModel.addTrackState.collectAsState()
+    val tracksState by viewModel.tracksState.collectAsState()
 
     TrackSearcherScreenBody(
-        tracks = viewModel.tracksMap.values.toList(),
+        tracks = tracksState.values.toList(),
         onSearchForTracks = {
             viewModelScope.launch {
                 viewModel.searchForTrackByTitle(it)
@@ -76,9 +76,31 @@ fun TrackSearcherScreen(
                 viewModel.removeTrackFromPlaylist(it.spotifyTrack)
             }
         },
+        onFailureMessage = {
+            viewModelScope.launch {
+                viewModel.failureMessageShown(it)
+                if (it.failureMessage == null) return@launch
+                snackbarHostState.showSnackbar(it.failureMessage)
+            }
+        },
+        onSearchFailure = {
+            viewModelScope.launch {
+                snackbarHostState.showSnackbar("Something went wrong: $it")
+            }
+        },
+        onAddSuccess = {
+            viewModelScope.launch {
+                viewModel.successMessageShown(it)
+                snackbarHostState.showSnackbar("${it.spotifyTrack.title} has been added to your playlist!")
+            }
+        },
+        onRemoveSuccess = {
+            viewModelScope.launch {
+                viewModel.removeMessageShown(it)
+                snackbarHostState.showSnackbar("${it.spotifyTrack.title} has been removed from your playlist.")
+            }
+        },
         searchState = searchState,
-        addTrackState = addTrackState,
-        snackbarHostState = snackbarHostState,
         modifier = Modifier.fillMaxSize()
     )
 }
@@ -87,15 +109,15 @@ fun TrackSearcherScreen(
 private fun TrackSearcherScreenBody(
     tracks: List<SpotifyTrackUiState>?,
     searchState: SearchState,
-    addTrackState: AddSpotifyTrackState,
-    snackbarHostState: SnackbarHostState,
     onSearchForTracks: (String) -> Unit,
     onAddClicked: (SpotifyTrackUiState) -> Unit,
     onRemoveClicked: (SpotifyTrackUiState) -> Unit,
+    onFailureMessage: (SpotifyTrackUiState) -> Unit,
+    onAddSuccess: (SpotifyTrackUiState) -> Unit,
+    onRemoveSuccess: (SpotifyTrackUiState) -> Unit,
+    onSearchFailure: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
@@ -126,16 +148,23 @@ private fun TrackSearcherScreenBody(
                             SpotifyTrackRow(
                                 track = track,
                                 onAddClicked = { onAddClicked(track) },
-                                onRemoveClicked = { onRemoveClicked(track) },
-                                addTrackState = addTrackState
+                                onRemoveClicked = { onRemoveClicked(track) }
                             )
+
+                            if (track.failureMessage != null) {
+                                onFailureMessage(track)
+                            }
+                            if (track.justAdded) {
+                                onAddSuccess(track)
+                            }
+                            if (track.justRemoved) {
+                                onRemoveSuccess(track)
+                            }
                         }
                     }
                 }
                 is SearchState.FAILURE -> {
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Something went wrong: ${state.message}")
-                    }
+                    state.message?.let { onSearchFailure(it) }
                 }
             }
         }
@@ -145,12 +174,9 @@ private fun TrackSearcherScreenBody(
 @Composable
 private fun SpotifyTrackRow(
     track: SpotifyTrackUiState,
-    addTrackState: AddSpotifyTrackState,
     onAddClicked: () -> Unit,
-    onRemoveClicked: () -> Unit,
+    onRemoveClicked: () -> Unit
 ) {
-    // TODO: use addTrackState here to show message on failure to add track and loading indicator
-
     Row(
         modifier = Modifier
             .height(IntrinsicSize.Min)
@@ -158,31 +184,18 @@ private fun SpotifyTrackRow(
     ) {
         AlbumArtView(url = track.spotifyTrack.album.images.first().url)
         TrackTitleAndArtistCard(
-            title = track.spotifyTrack.title,
-            artist = track.spotifyTrack.artists.first().name,
-            onInteractionButtonClicked = {
-                if (!track.isInPlaylist) {
-                    onAddClicked()
-                } else {
-                    onRemoveClicked()
-                }
-            },
-            interactionButtonIcon =
-                if (!track.isInPlaylist) {
-                    Icons.Rounded.Add
-                } else {
-                    Icons.Rounded.Remove
-                }
+            track = track,
+            onAddButtonClicked = onAddClicked,
+            onRemoveButtonClicked = onRemoveClicked
         )
     }
 }
 
 @Composable
 private fun TrackTitleAndArtistCard(
-    title: String,
-    artist: String,
-    onInteractionButtonClicked: () -> Unit,
-    interactionButtonIcon: ImageVector
+    track: SpotifyTrackUiState,
+    onAddButtonClicked: () -> Unit,
+    onRemoveButtonClicked: () -> Unit
 ) {
     Card(
         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
@@ -194,14 +207,29 @@ private fun TrackTitleAndArtistCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TrackTitleAndArtistColumn(
-                title = title,
-                artist = artist,
+                title = track.spotifyTrack.title,
+                artist = track.spotifyTrack.artists.first().name,
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(1F)
             )
-            IconButton(onClick = onInteractionButtonClicked) {
-                Icon(imageVector = interactionButtonIcon, contentDescription = null)
+
+            if (track.isInPlaylist) {
+                IconButton(onClick = onRemoveButtonClicked) {
+                    Icon(
+                        imageVector = Icons.Rounded.Favorite,
+                        tint = MaterialTheme.colorScheme.surfaceTint,
+                        contentDescription = stringResource(id = R.string.remove_track_from_playlist)
+                    )
+                }
+            } else {
+                IconButton(onClick = onAddButtonClicked) {
+                    Icon(
+                        imageVector = Icons.Rounded.FavoriteBorder,
+                        tint = MaterialTheme.colorScheme.surfaceTint,
+                        contentDescription = stringResource(id = R.string.add_track_to_playlist)
+                    )
+                }
             }
         }
     }
