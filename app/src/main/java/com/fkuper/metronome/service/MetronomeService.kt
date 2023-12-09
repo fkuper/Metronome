@@ -2,18 +2,18 @@ package com.fkuper.metronome.service
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
-import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.LifecycleService
 import com.fkuper.metronome.R
 import com.fkuper.metronome.utils.MetronomeConfig
 import com.fkuper.metronome.utils.NoteValue
 import com.fkuper.metronome.utils.TimeSignature
 
-class MetronomeService : Service(), TickListener {
+class MetronomeService : LifecycleService(), TickListener {
 
     private val binder = LocalBinder()
     private lateinit var metronomeEngine: MetronomeEngine
@@ -21,7 +21,7 @@ class MetronomeService : Service(), TickListener {
 
     override fun onCreate() {
         super.onCreate()
-        metronomeEngine = MetronomeEngine(this)
+        metronomeEngine = MetronomeEngine(this, lifecycle)
         metronomeEngine.setListener(this)
     }
 
@@ -36,7 +36,7 @@ class MetronomeService : Service(), TickListener {
             }
         }
 
-        return START_STICKY
+        return super.onStartCommand(intent, flags, startId)
     }
 
     fun setListener(listener: TickListener) {
@@ -94,6 +94,7 @@ class MetronomeService : Service(), TickListener {
     }
 
     override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
         return binder
     }
 

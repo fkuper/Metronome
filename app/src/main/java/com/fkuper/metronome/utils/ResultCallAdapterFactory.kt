@@ -6,7 +6,9 @@ import retrofit2.Retrofit
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-// Source: https://blog.canopas.com/retrofit-effective-error-handling-with-kotlin-coroutine-and-result-api-405217e9a73d
+/**
+ * Source: https://blog.canopas.com/retrofit-effective-error-handling-with-kotlin-coroutine-and-result-api-405217e9a73d
+ */
 @Suppress("UNCHECKED_CAST")
 class ResultCallAdapterFactory : CallAdapter.Factory() {
 

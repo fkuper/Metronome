@@ -1,6 +1,10 @@
 package com.fkuper.metronome.utils
 
-enum class TimeSignature(val upper: Int, val lower: Int) {
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+enum class TimeSignature(val upper: Int, val lower: Int) : Parcelable {
     ONE_FOUR(1, 4),
     TWO_FOUR(2, 4),
     THREE_FOUR(3, 4),

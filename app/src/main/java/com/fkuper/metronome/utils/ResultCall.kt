@@ -8,7 +8,9 @@ import retrofit2.Callback
 import retrofit2.HttpException
 import retrofit2.Response
 
-// Source: https://blog.canopas.com/retrofit-effective-error-handling-with-kotlin-coroutine-and-result-api-405217e9a73d
+/**
+ * Source: https://blog.canopas.com/retrofit-effective-error-handling-with-kotlin-coroutine-and-result-api-405217e9a73d
+ */
 class ResultCall<T>(private val delegate: Call<T>) : Call<Result<T>> {
 
     override fun enqueue(callback: Callback<Result<T>>) {

@@ -5,6 +5,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    id("kotlin-parcelize")
 }
 
 val apiKeyPropertiesFile = rootProject.file("apikey.properties")
@@ -88,10 +89,13 @@ dependencies {
     // Optional - Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
+    implementation("com.google.guava:guava:31.1-android")
+
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    implementation("androidx.lifecycle:lifecycle-service:2.6.2")
 
     // Room
     val roomVersion = "2.6.0"

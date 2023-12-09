@@ -11,6 +11,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.fkuper.metronome.MetronomeApplication
 import com.fkuper.metronome.service.MetronomeService
 import com.fkuper.metronome.service.TickListener
+import com.fkuper.metronome.utils.putParcelableExtra
 
 class HomeViewModel(
     private val application: MetronomeApplication
@@ -49,8 +50,8 @@ class HomeViewModel(
         Intent(application.applicationContext, MetronomeService::class.java).also {
             it.action = MetronomeService.Action.START.name
             it.putExtra(MetronomeService.Extra.BPM.name, _metronomeConfig.value.bpm)
-            it.putExtra(MetronomeService.Extra.TIME_SIGNATURE.name, _metronomeConfig.value.timeSignature)
-            it.putExtra(MetronomeService.Extra.NOTE_VALUE.name, _metronomeConfig.value.noteValue)
+            it.putParcelableExtra(MetronomeService.Extra.TIME_SIGNATURE.name, _metronomeConfig.value.timeSignature)
+            it.putParcelableExtra(MetronomeService.Extra.NOTE_VALUE.name, _metronomeConfig.value.noteValue)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 application.startForegroundService(it)
