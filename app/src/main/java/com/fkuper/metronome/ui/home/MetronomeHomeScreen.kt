@@ -34,13 +34,15 @@ import com.fkuper.metronome.ui.tracks.TrackCreatorScreen
 import com.fkuper.metronome.ui.tracks.TrackEditorScreen
 import com.fkuper.metronome.ui.tracks.TrackPickerScreen
 import com.fkuper.metronome.ui.tracks.TrackSearcherScreen
+import com.fkuper.metronome.utils.DisplayTheme
 import com.fkuper.metronome.utils.MetronomeScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MetronomeHomeScreen(
     navController: NavHostController = rememberNavController(),
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    onThemeChanged: (DisplayTheme) -> Unit,
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = checkNotNull(
@@ -77,7 +79,7 @@ fun MetronomeHomeScreen(
                     HomeScreen(viewModel)
                 }
                 composable(route = MetronomeScreen.Settings.name) {
-                    SettingsScreen()
+                    SettingsScreen(onThemeChanged = onThemeChanged)
                 }
                 composable(route = MetronomeScreen.TrackPicker.name) {
                     TrackPickerScreen(

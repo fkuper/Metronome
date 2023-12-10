@@ -6,6 +6,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.fkuper.metronome.MainViewModel
 import com.fkuper.metronome.MetronomeApplication
 import com.fkuper.metronome.ui.home.HomeViewModel
 import com.fkuper.metronome.ui.tracks.TrackCreatorViewModel
@@ -35,6 +36,12 @@ object AppViewModelProvider {
         }
         initializer {
             TrackSearcherViewModel(metronomeApplication().container.tracksRepository)
+        }
+        initializer {
+            SettingsViewModel(metronomeApplication().container.preferencesRepository)
+        }
+        initializer {
+            MainViewModel(metronomeApplication().container.preferencesRepository)
         }
     }
 }

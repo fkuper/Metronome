@@ -7,6 +7,7 @@ import android.content.Context
  */
 interface AppContainer {
     val tracksRepository: TracksRepository
+    val preferencesRepository: SharedPreferencesRepository
 }
 
 /**
@@ -21,4 +22,9 @@ class AppDataContainer(private val context: Context) : AppContainer {
             MetronomeDatabase.getDatabase(context).trackDao()
         )
     }
+
+    override val preferencesRepository: SharedPreferencesRepository by lazy {
+        SharedPreferencesRepository(context)
+    }
+
 }
