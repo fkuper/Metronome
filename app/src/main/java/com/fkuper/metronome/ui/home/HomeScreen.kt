@@ -27,9 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fkuper.metronome.R
 import com.fkuper.metronome.ui.components.MetronomeConfigControls
-import com.fkuper.metronome.utils.MetronomeConfig
-import com.fkuper.metronome.utils.NoteValue
-import com.fkuper.metronome.utils.TimeSignature
+import com.fkuper.metronome.utils.model.MetronomeConfig
+import com.fkuper.metronome.utils.model.NoteValue
+import com.fkuper.metronome.utils.model.TimeSignature
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {

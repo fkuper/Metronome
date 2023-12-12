@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.fkuper.metronome.utils.Weekday
+import com.fkuper.metronome.utils.model.Weekday
 
 @Composable
 fun WeekdaysToggleButton(

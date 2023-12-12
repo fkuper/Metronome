@@ -5,10 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.fkuper.metronome.data.TracksRepository
-import com.fkuper.metronome.utils.TrackDetails
-import com.fkuper.metronome.utils.TrackDetails.Companion.validateInput
-import com.fkuper.metronome.utils.TrackUiState
-import com.fkuper.metronome.utils.toTrack
+import com.fkuper.metronome.utils.ext.TrackDetails
+import com.fkuper.metronome.utils.ext.TrackDetails.Companion.validateInput
+import com.fkuper.metronome.utils.ext.TrackUiState
+import com.fkuper.metronome.utils.ext.toTrack
 
 class TrackCreatorViewModel(private val tracksRepository: TracksRepository) : ViewModel() {
 

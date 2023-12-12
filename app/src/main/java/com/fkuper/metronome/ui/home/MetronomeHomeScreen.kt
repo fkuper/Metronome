@@ -34,8 +34,8 @@ import com.fkuper.metronome.ui.tracks.TrackCreatorScreen
 import com.fkuper.metronome.ui.tracks.TrackEditorScreen
 import com.fkuper.metronome.ui.tracks.TrackPickerScreen
 import com.fkuper.metronome.ui.tracks.TrackSearcherScreen
-import com.fkuper.metronome.utils.DisplayTheme
-import com.fkuper.metronome.utils.MetronomeScreen
+import com.fkuper.metronome.utils.model.DisplayTheme
+import com.fkuper.metronome.utils.model.MetronomeScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

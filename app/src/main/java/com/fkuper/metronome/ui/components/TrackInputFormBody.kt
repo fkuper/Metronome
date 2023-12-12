@@ -13,9 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.fkuper.metronome.R
-import com.fkuper.metronome.utils.NoteValue
-import com.fkuper.metronome.utils.TrackDetails
-import com.fkuper.metronome.utils.TrackUiState
+import com.fkuper.metronome.utils.model.NoteValue
+import com.fkuper.metronome.utils.ext.TrackDetails
+import com.fkuper.metronome.utils.ext.TrackUiState
 
 @Composable
 fun TrackInputFormBody(

@@ -1,6 +1,8 @@
-package com.fkuper.metronome.utils
+package com.fkuper.metronome.utils.ext
 
 import com.fkuper.metronome.data.Track
+import com.fkuper.metronome.utils.model.NoteValue
+import com.fkuper.metronome.utils.model.TimeSignature
 
 data class TrackUiState(
     val trackDetails: TrackDetails = TrackDetails(),

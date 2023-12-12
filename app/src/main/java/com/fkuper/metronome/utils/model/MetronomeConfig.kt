@@ -1,4 +1,4 @@
-package com.fkuper.metronome.utils
+package com.fkuper.metronome.utils.model
 
 data class MetronomeConfig(
     var bpm: Int = 120,

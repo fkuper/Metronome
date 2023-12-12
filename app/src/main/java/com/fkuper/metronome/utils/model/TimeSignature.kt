@@ -1,4 +1,4 @@
-package com.fkuper.metronome.utils
+package com.fkuper.metronome.utils.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

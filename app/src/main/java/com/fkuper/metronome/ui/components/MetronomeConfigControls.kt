@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.fkuper.metronome.R
-import com.fkuper.metronome.utils.NoteValue
-import com.fkuper.metronome.utils.TimeSignature
+import com.fkuper.metronome.utils.model.NoteValue
+import com.fkuper.metronome.utils.model.TimeSignature
 
 @Composable
 fun MetronomeConfigControls(

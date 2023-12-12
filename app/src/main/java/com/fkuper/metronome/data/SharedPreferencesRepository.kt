@@ -3,8 +3,8 @@ package com.fkuper.metronome.data
 import android.content.Context
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
-import com.fkuper.metronome.utils.DisplayTheme
-import com.fkuper.metronome.utils.Weekday
+import com.fkuper.metronome.utils.model.DisplayTheme
+import com.fkuper.metronome.utils.model.Weekday
 import com.google.gson.Gson
 
 class SharedPreferencesRepository(context: Context) {

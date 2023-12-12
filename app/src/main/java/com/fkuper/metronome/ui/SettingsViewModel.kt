@@ -1,16 +1,18 @@
 package com.fkuper.metronome.ui
 
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.chargemap.compose.numberpicker.Hours
-import com.fkuper.metronome.data.SharedPreferencesRepository
-import com.fkuper.metronome.utils.DisplayTheme
-import com.fkuper.metronome.utils.Weekday
+import com.fkuper.metronome.MetronomeApplication
+import com.fkuper.metronome.utils.model.DisplayTheme
+import com.fkuper.metronome.utils.PracticeNotificationsAlarmHandler
+import com.fkuper.metronome.utils.model.Weekday
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class SettingsViewModel(
-    private val prefRepo: SharedPreferencesRepository
-) : ViewModel() {
+class SettingsViewModel(application: MetronomeApplication) : AndroidViewModel(application) {
+
+    private val prefRepo = application.container.preferencesRepository
+    private val notificationsAlarmHandler = PracticeNotificationsAlarmHandler.getInstance(application.applicationContext)
 
     private val _practiceRemindersOn = MutableStateFlow(prefRepo.getPracticeRemindersOn())
     val practiceRemindersOn = _practiceRemindersOn.asStateFlow()
@@ -27,19 +29,19 @@ class SettingsViewModel(
     fun togglePracticeReminders(newValue: Boolean) {
         prefRepo.setPracticeRemindersOn(newValue)
         _practiceRemindersOn.value = newValue
-        // TODO: set up alarm manager
+        notificationsAlarmHandler.setupPracticeNotifications()
     }
 
     fun setPracticeDays(newValue: Array<Weekday>) {
         prefRepo.setPracticeDays(newValue)
         _practiceDays.value = newValue
-        // TODO: set up alarm manager
+        notificationsAlarmHandler.setupPracticeNotifications()
     }
 
     fun setPracticeHours(newValue: Hours) {
         prefRepo.setPracticeHours(newValue)
         _practiceHours.value = newValue
-        // TODO: set up alarm manager
+        notificationsAlarmHandler.setupPracticeNotifications()
     }
 
     fun setDisplayTheme(newValue: DisplayTheme) {

@@ -1,4 +1,4 @@
-package com.fkuper.metronome.utils
+package com.fkuper.metronome.utils.model
 
 import androidx.annotation.StringRes
 import com.fkuper.metronome.R

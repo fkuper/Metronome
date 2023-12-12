@@ -41,8 +41,8 @@ import com.chargemap.compose.numberpicker.Hours
 import com.chargemap.compose.numberpicker.HoursNumberPicker
 import com.fkuper.metronome.R
 import com.fkuper.metronome.ui.components.WeekdaysToggleButton
-import com.fkuper.metronome.utils.DisplayTheme
-import com.fkuper.metronome.utils.Weekday
+import com.fkuper.metronome.utils.model.DisplayTheme
+import com.fkuper.metronome.utils.model.Weekday
 
 @Composable
 fun SettingsScreen(

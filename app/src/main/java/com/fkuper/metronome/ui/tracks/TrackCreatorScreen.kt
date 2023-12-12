@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fkuper.metronome.ui.AppViewModelProvider
 import com.fkuper.metronome.ui.components.TrackInputFormBody
-import com.fkuper.metronome.utils.TrackUiState
+import com.fkuper.metronome.utils.ext.TrackUiState
 import kotlinx.coroutines.launch
 
 @Composable

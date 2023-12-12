@@ -8,10 +8,11 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
+import com.fkuper.metronome.MetronomeApplication
 import com.fkuper.metronome.R
-import com.fkuper.metronome.utils.MetronomeConfig
-import com.fkuper.metronome.utils.NoteValue
-import com.fkuper.metronome.utils.TimeSignature
+import com.fkuper.metronome.utils.model.MetronomeConfig
+import com.fkuper.metronome.utils.model.NoteValue
+import com.fkuper.metronome.utils.model.TimeSignature
 
 class MetronomeService : LifecycleService(), TickListener {
 
@@ -58,16 +59,16 @@ class MetronomeService : LifecycleService(), TickListener {
         )
 
         val notification = NotificationCompat
-            .Builder(this, "metronome_channel")
+            .Builder(this, MetronomeApplication.NOTIFICATION_CHANNEL_ID)
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(getString(R.string.notification_title))
-            .setContentText(getString(R.string.notification_text))
+            .setContentTitle(getString(R.string.metronome_running_notification_title))
+            .setContentText(getString(R.string.metronome_running_notification_text))
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentIntent(pendingIntent)
             .build()
 
-        startForeground(1, notification)
+        startForeground(MetronomeApplication.METRONOME_RUNNING_NOTIFICATION_ID, notification)
     }
 
     private fun pause() {

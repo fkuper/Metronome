@@ -2,8 +2,8 @@ package com.fkuper.metronome.ui.home
 
 import android.content.Intent
 import com.fkuper.metronome.data.Track
-import com.fkuper.metronome.utils.MetronomeConfig
-import com.fkuper.metronome.utils.NoteValue
+import com.fkuper.metronome.utils.model.MetronomeConfig
+import com.fkuper.metronome.utils.model.NoteValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import android.os.Build
@@ -11,7 +11,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.fkuper.metronome.MetronomeApplication
 import com.fkuper.metronome.service.MetronomeService
 import com.fkuper.metronome.service.TickListener
-import com.fkuper.metronome.utils.putParcelableExtra
+import com.fkuper.metronome.utils.ext.putParcelableExtra
 
 class HomeViewModel(
     private val application: MetronomeApplication

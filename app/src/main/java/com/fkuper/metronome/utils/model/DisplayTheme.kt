@@ -1,4 +1,4 @@
-package com.fkuper.metronome.utils
+package com.fkuper.metronome.utils.model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome

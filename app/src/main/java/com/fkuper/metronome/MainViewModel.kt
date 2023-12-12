@@ -2,7 +2,7 @@ package com.fkuper.metronome
 
 import androidx.lifecycle.ViewModel
 import com.fkuper.metronome.data.SharedPreferencesRepository
-import com.fkuper.metronome.utils.DisplayTheme
+import com.fkuper.metronome.utils.model.DisplayTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 

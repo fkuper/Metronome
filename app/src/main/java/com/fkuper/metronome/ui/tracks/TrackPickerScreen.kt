@@ -54,7 +54,7 @@ import com.fkuper.metronome.R
 import com.fkuper.metronome.ui.AppViewModelProvider
 import com.fkuper.metronome.ui.components.NoteIcon
 import com.fkuper.metronome.ui.components.TrackTitleAndArtistColumn
-import com.fkuper.metronome.utils.NoteValue
+import com.fkuper.metronome.utils.model.NoteValue
 import kotlinx.coroutines.launch
 
 @Composable

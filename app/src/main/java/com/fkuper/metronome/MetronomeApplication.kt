@@ -30,9 +30,9 @@ class MetronomeApplication : Application() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "metronome_channel",
-                "Metronome Notifications",
-                NotificationManager.IMPORTANCE_LOW
+                NOTIFICATION_CHANNEL_ID,
+                NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH
             )
 
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -55,6 +55,14 @@ class MetronomeApplication : Application() {
         override fun onServiceDisconnected(name: ComponentName?) {
             bound = false
         }
+    }
+
+    companion object {
+        const val NOTIFICATION_CHANNEL_ID = "metronome_channel"
+        const val NOTIFICATION_CHANNEL_NAME = "Metronome Notifications"
+
+        const val METRONOME_RUNNING_NOTIFICATION_ID = 1
+        const val PRACTICE_REMINDER_NOTIFICATION_ID = 2
     }
 
 }

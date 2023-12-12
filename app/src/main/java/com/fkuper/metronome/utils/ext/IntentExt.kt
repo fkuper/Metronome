@@ -1,4 +1,4 @@
-package com.fkuper.metronome.utils
+package com.fkuper.metronome.utils.ext
 
 import android.content.Intent
 import android.os.Parcelable

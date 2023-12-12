@@ -2,8 +2,8 @@ package com.fkuper.metronome.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.fkuper.metronome.utils.NoteValue
-import com.fkuper.metronome.utils.TimeSignature
+import com.fkuper.metronome.utils.model.NoteValue
+import com.fkuper.metronome.utils.model.TimeSignature
 import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "tracks")

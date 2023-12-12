@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import com.fkuper.metronome.R
-import com.fkuper.metronome.utils.TimeSignature
+import com.fkuper.metronome.utils.model.TimeSignature
 
 @Composable
 fun TimeSignaturePicker(

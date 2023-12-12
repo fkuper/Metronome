@@ -7,7 +7,7 @@ import android.media.AudioTrack
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.fkuper.metronome.utils.MetronomeConfig
+import com.fkuper.metronome.utils.model.MetronomeConfig
 import com.fkuper.metronome.R
 import com.fkuper.metronome.utils.SoundLoader
 import kotlinx.coroutines.CancellationException

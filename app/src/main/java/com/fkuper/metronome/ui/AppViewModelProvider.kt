@@ -38,7 +38,7 @@ object AppViewModelProvider {
             TrackSearcherViewModel(metronomeApplication().container.tracksRepository)
         }
         initializer {
-            SettingsViewModel(metronomeApplication().container.preferencesRepository)
+            SettingsViewModel(metronomeApplication())
         }
         initializer {
             MainViewModel(metronomeApplication().container.preferencesRepository)
