@@ -36,6 +36,7 @@
     <string name="metronome_running_notification_title">Metronome is currently running…</string>
     <string name="metronome_running_notification_text">Tap here to stop it.</string>
 
+    <string name="practice_reminder_info_text">This will send you practice reminders at the given days and time.</string>
     <string name="practice_reminder_notification_title">Time to practice!</string>
     <string name="practice_reminder_notification_text">Take a little time to improve today.</string>
 
