@@ -48,6 +48,13 @@ class PracticeNotificationsAlarmHandler private constructor(private val context:
                         PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
                     )
                 }
+
+                if (System.currentTimeMillis() > calendar.timeInMillis) {
+                    // if alarm is in the past, instead schedule first time 7 days from that point
+                    // this avoids firing the alarm immediately
+                    calendar.timeInMillis = calendar.timeInMillis + (AlarmManager.INTERVAL_DAY * 7)
+                }
+
                 alarmManager.setRepeating(
                     AlarmManager.RTC_WAKEUP,
                     calendar.timeInMillis,
