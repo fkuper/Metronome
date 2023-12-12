@@ -57,7 +57,8 @@ fun BpmPicker(
             },
             list = possibleValues,
             dividersColor = MaterialTheme.colorScheme.surfaceTint,
-            textStyle = MaterialTheme.typography.titleLarge,
+            textStyle = MaterialTheme.typography.titleLarge
+                .copy(color = MaterialTheme.colorScheme.primary),
             modifier = Modifier.width(dimensionResource(id = R.dimen.bpm_picker_width))
         )
         IconButton(

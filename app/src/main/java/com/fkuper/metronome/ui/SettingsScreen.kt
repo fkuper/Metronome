@@ -256,7 +256,9 @@ private fun TimePicker(
                 textAlign = TextAlign.Center,
                 text = ":"
             )
-        }
+        },
+        textStyle = MaterialTheme.typography.bodyLarge
+            .copy(color = MaterialTheme.colorScheme.primary)
     )
 }
 
