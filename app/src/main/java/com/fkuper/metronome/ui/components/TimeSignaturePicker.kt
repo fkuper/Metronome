@@ -85,7 +85,7 @@ private fun TimeSignatureGrid(onTimeSignaturePicked: (TimeSignature) -> Unit) {
                 .padding(dimensionResource(id = R.dimen.padding_medium))
         )
         LazyVerticalGrid(columns = GridCells.Fixed(4)) {
-            items(TimeSignature.values()) {
+            items(TimeSignature.entries) {
                 TimeSignatureCard(
                     timeSignature = it,
                     onClick = {

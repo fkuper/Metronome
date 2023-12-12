@@ -20,7 +20,7 @@ enum class MetronomeScreen(@StringRes val title: Int, val navArgumentName: Strin
 
     companion object {
         fun forString(input: String): MetronomeScreen? {
-            return values().find { it.toString() == input }
+            return entries.find { it.toString() == input }
         }
     }
 }

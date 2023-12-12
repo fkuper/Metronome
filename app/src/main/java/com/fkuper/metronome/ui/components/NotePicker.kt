@@ -108,8 +108,8 @@ private fun NoteValueGrid(onNoteValuePicked: (NoteValue) -> Unit) {
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.padding_medium))
         )
-        LazyVerticalGrid(columns = GridCells.Fixed(NoteValue.values().size)) {
-            items(NoteValue.values()) {
+        LazyVerticalGrid(columns = GridCells.Fixed(NoteValue.entries.size)) {
+            items(NoteValue.entries) {
                 NoteValueCard(
                     noteValue = it,
                     onClick = {
