@@ -1,5 +1,6 @@
 package com.fkuper.metronome.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -106,51 +108,117 @@ private fun SettingsScreenBody(
 
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         SectionHeading(icon = Icons.Rounded.Notifications, title = "Notifications")
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.padding_medium))
-        ) {
-            Text(
-                text = "Practice Reminders",
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Spacer(modifier = Modifier.weight(1F))
-            Switch(
-                checked = practiceRemindersOn,
-                onCheckedChange = { onPracticeRemindersToggled(it) },
-                thumbContent = if (practiceRemindersOn) {
-                    {
-                        Icon(
-                            imageVector = Icons.Rounded.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize)
-                        )
-                    }
-                } else null
-            )
-            IconButton(onClick = { showInfoDialog = true }) {
-                Icon(imageVector = Icons.Rounded.QuestionMark, contentDescription = null)
-            }
-        }
-        if (practiceRemindersOn) {
-            PracticeRemindersSetup(
-                practiceDays = practiceDays,
-                onPracticeDaysChanged = onPracticeDaysChanged,
-                practiceHours = practiceHours,
-                onPracticeHoursChanged = onPracticeHoursChanged,
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_medium)),
-            )
-        }
+        PracticeRemindersNotificationPicker(
+            practiceRemindersOn = practiceRemindersOn,
+            onPracticeRemindersToggled = onPracticeRemindersToggled,
+            practiceDays = practiceDays,
+            onPracticeDaysChanged = onPracticeDaysChanged,
+            practiceHours = practiceHours,
+            onPracticeHoursChanged = onPracticeHoursChanged
+        )
         SectionHeading(icon = Icons.Rounded.DisplaySettings, title = "Display")
         DisplayThemePicker(
             displayTheme = displayTheme ?: DisplayTheme.AUTO,
             onDisplayThemeChanged = { onDisplayThemeChanged(it) }
         )
         SectionHeading(icon = Icons.Rounded.Info, title = "Info")
-        // TODO: implement info section (attributions, info about me etc.)
+        InfoSection()
+    }
+}
+
+@Composable
+private fun InfoSection() {
+    val uriHandler = LocalUriHandler.current
+    val authorMail = stringResource(id = R.string.author_email_uri)
+    val iconCredit = stringResource(id = R.string.flaticon_pentagram_icons_uri)
+
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(dimensionResource(id = R.dimen.padding_medium))
+    ) {
+        InfoSectionItem(
+            title = "Author",
+            body = "Frederik Kuper",
+            onClick = { uriHandler.openUri(authorMail) }
+        )
+        // TODO: add link to code repo after publishing it here
+        Spacer(modifier = Modifier.height(20.dp))
+        InfoSectionItem(
+            title = "Note Icons Credit",
+            body = "Pentagram icons created by Freepik - Flaticon",
+            onClick = { uriHandler.openUri(iconCredit) }
+        )
+    }
+}
+
+@Composable
+private fun InfoSectionItem(
+    title: String,
+    body: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+) {
+    Column(modifier = modifier.clickable { onClick() }) {
+        Text(text = title, style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = body, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+private fun PracticeRemindersNotificationPicker(
+    practiceRemindersOn: Boolean,
+    onPracticeRemindersToggled: (Boolean) -> Unit,
+    practiceDays: Array<Weekday>?,
+    onPracticeDaysChanged: (Array<Weekday>) -> Unit,
+    practiceHours: Hours,
+    onPracticeHoursChanged: (Hours) -> Unit
+) {
+    var showInfoDialog by remember { mutableStateOf(false) }
+
+    if (showInfoDialog) {
+        PracticeRemindersInfoDialog(onDismissRequest = {
+            showInfoDialog = false
+        })
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(id = R.dimen.padding_medium))
+    ) {
+        Text(
+            text = "Practice Reminders",
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(modifier = Modifier.weight(1F))
+        Switch(
+            checked = practiceRemindersOn,
+            onCheckedChange = { onPracticeRemindersToggled(it) },
+            thumbContent = if (practiceRemindersOn) {
+                {
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                    )
+                }
+            } else null
+        )
+        IconButton(onClick = { showInfoDialog = true }) {
+            Icon(imageVector = Icons.Rounded.QuestionMark, contentDescription = null)
+        }
+    }
+    if (practiceRemindersOn) {
+        PracticeRemindersSetup(
+            practiceDays = practiceDays,
+            onPracticeDaysChanged = onPracticeDaysChanged,
+            practiceHours = practiceHours,
+            onPracticeHoursChanged = onPracticeHoursChanged,
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.padding_medium)),
+        )
     }
 }
 
