@@ -139,14 +139,16 @@ private fun InfoSection() {
         InfoSectionItem(
             title = "Author",
             body = "Frederik Kuper",
-            onClick = { uriHandler.openUri(authorMail) }
+            onClick = { uriHandler.openUri(authorMail) },
+            modifier = Modifier.fillMaxWidth()
         )
         // TODO: add link to code repo after publishing it here
         Spacer(modifier = Modifier.height(20.dp))
         InfoSectionItem(
             title = "Note Icons Credit",
             body = "Pentagram icons created by Freepik - Flaticon",
-            onClick = { uriHandler.openUri(iconCredit) }
+            onClick = { uriHandler.openUri(iconCredit) },
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
