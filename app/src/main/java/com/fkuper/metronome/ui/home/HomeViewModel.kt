@@ -17,7 +17,11 @@ class HomeViewModel(
     private val application: MetronomeApplication
 ): AndroidViewModel(application), TickListener {
 
-    private val _metronomeConfig = MutableStateFlow(MetronomeConfig())
+    private val prefsRepo = application.container.preferencesRepository
+
+    private val _metronomeConfig = MutableStateFlow(
+        prefsRepo.getMetronomeConfig() ?: MetronomeConfig()
+    )
     val metronomeConfig = _metronomeConfig.asStateFlow()
 
     private val _metronomeIsPlaying = MutableStateFlow(false)
@@ -28,6 +32,7 @@ class HomeViewModel(
 
     fun updateMetronomeConfig(metronomeConfig: MetronomeConfig) {
         _metronomeConfig.value = metronomeConfig
+        prefsRepo.setMetronomeConfig(metronomeConfig)
         if (_metronomeIsPlaying.value) {
             startMetronomeService()
         }
@@ -39,6 +44,7 @@ class HomeViewModel(
             timeSignature = track.timeSignature,
             noteValue = track.noteValue ?: NoteValue.QUARTER
         )
+        prefsRepo.setMetronomeConfig(metronomeConfig.value)
         if (_metronomeIsPlaying.value) {
             startMetronomeService()
         }

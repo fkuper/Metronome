@@ -4,6 +4,7 @@ import android.content.Context
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.fkuper.metronome.utils.model.DisplayTheme
+import com.fkuper.metronome.utils.model.MetronomeConfig
 import com.fkuper.metronome.utils.model.Weekday
 import com.google.gson.Gson
 
@@ -29,6 +30,20 @@ class SharedPreferencesRepository(context: Context) {
         PREF_KEY_PRACTICE_DAYS.getString().also {
             return if (it.isNotEmpty()) {
                 gson.fromJson(PREF_KEY_PRACTICE_DAYS.getString(), Array<Weekday>::class.java)
+            } else {
+                null
+            }
+        }
+    }
+
+    fun setMetronomeConfig(value: MetronomeConfig) {
+        PREF_KEY_METRONOME_CONFIG.put(gson.toJson(value))
+    }
+
+    fun getMetronomeConfig(): MetronomeConfig? {
+        PREF_KEY_METRONOME_CONFIG.getString().also {
+            return if (it.isNotEmpty()) {
+                gson.fromJson(PREF_KEY_METRONOME_CONFIG.getString(), MetronomeConfig::class.java)
             } else {
                 null
             }
@@ -88,5 +103,6 @@ class SharedPreferencesRepository(context: Context) {
         private const val PREF_KEY_PRACTICE_TIME_HOURS = "practice_time_hours"
         private const val PREF_KEY_PRACTICE_TIME_MINUTES = "practice_time_minutes"
         private const val PREF_KEY_DISPLAY_THEME = "display_theme"
+        private const val PREF_KEY_METRONOME_CONFIG = "metronome_config"
     }
 }

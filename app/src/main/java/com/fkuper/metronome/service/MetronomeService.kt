@@ -94,6 +94,12 @@ class MetronomeService : LifecycleService(), TickListener {
         return config
     }
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        pause()
+        stopSelf()
+    }
+
     override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
         return binder
