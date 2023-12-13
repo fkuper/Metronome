@@ -61,7 +61,7 @@ class MetronomeService : LifecycleService(), TickListener {
         val notification = NotificationCompat
             .Builder(this, MetronomeApplication.NOTIFICATION_CHANNEL_ID)
             .setOngoing(true)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.mipmap.ic_launcher_foreground)
             .setContentTitle(getString(R.string.metronome_running_notification_title))
             .setContentText(getString(R.string.metronome_running_notification_text))
             .setPriority(NotificationCompat.PRIORITY_LOW)

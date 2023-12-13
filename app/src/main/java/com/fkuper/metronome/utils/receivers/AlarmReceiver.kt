@@ -39,7 +39,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         return NotificationCompat
             .Builder(context, MetronomeApplication.NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.mipmap.ic_launcher_foreground)
             .setContentTitle(getString(context, R.string.practice_reminder_notification_title))
             .setContentText(getString(context, R.string.practice_reminder_notification_text))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
