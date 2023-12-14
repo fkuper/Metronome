@@ -8,9 +8,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material.icons.rounded.FlagCircle
@@ -67,12 +72,18 @@ private fun HomeScreenBody(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
+        Spacer(modifier = Modifier.weight(1F))
         MetronomeTickView(
             timeSignature = metronomeConfig.timeSignature,
             tickCount = metronomeCount,
-            modifier = Modifier.fillMaxWidth().weight(1F)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = dimensionResource(id = R.dimen.padding_medium))
         )
+        Spacer(modifier = Modifier.weight(1F))
         MetronomePlayButtonBar(
             metronomeIsPlaying = metronomeIsPlaying,
             onPlayPressed = onPlayPressed,
@@ -160,11 +171,26 @@ private fun MetronomePlayButtonBar(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, device = "spec:parent=small_phone,orientation=portrait")
 @Composable
-private fun HomeScreenBodyPreview() {
+private fun HomeScreenBodyPortraitPreview() {
     HomeScreenBody(
-        metronomeConfig = MetronomeConfig(),
+        metronomeConfig = MetronomeConfig(timeSignature = TimeSignature.THIRTEEN_FOUR),
+        metronomeIsPlaying = false,
+        metronomeCount = 0,
+        onPlayPressed = { },
+        onStopPressed = { },
+        onBpmChanged = { },
+        onTimeSignatureChanged = { },
+        onNoteValuePicked = { }
+    )
+}
+
+@Preview(showBackground = true, device = "spec:parent=small_phone,orientation=landscape")
+@Composable
+private fun HomeScreenBodyLandscapePreview() {
+    HomeScreenBody(
+        metronomeConfig = MetronomeConfig(timeSignature = TimeSignature.THIRTEEN_FOUR),
         metronomeIsPlaying = false,
         metronomeCount = 0,
         onPlayPressed = { },
