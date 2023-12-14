@@ -8,19 +8,28 @@ import com.fkuper.metronome.data.TracksRepository
 import com.fkuper.metronome.data.toMetronomeTrack
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class TrackSearcherViewModel(private val tracksRepository: TracksRepository) : ViewModel() {
 
     val searchState = MutableStateFlow<SearchState>(SearchState.START)
+
+    private val _searchString = MutableStateFlow("")
+    val searchString = _searchString.asStateFlow()
+
     private val _tracksState = MutableStateFlow<SnapshotStateMap<String, SpotifyTrackUiState>>(
         mutableStateMapOf()
     )
     val tracksState: StateFlow<Map<String, SpotifyTrackUiState>> = _tracksState
 
-    suspend fun searchForTrackByTitle(title: String) {
+    fun updateSearchString(value: String) {
+        _searchString.value = value
+    }
+
+    suspend fun searchForTracks() {
         searchState.value = SearchState.LOADING
 
-        tracksRepository.searchForTrack(title)
+        tracksRepository.searchForTrack(_searchString.value)
             .onSuccess { searchResult ->
                 val searchResultMap = searchResult.tracks.items
                     .associateBy({ it.id }, { SpotifyTrackUiState(it) })

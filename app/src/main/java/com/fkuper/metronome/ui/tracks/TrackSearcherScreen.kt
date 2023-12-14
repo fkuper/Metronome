@@ -29,15 +29,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -58,12 +59,16 @@ fun TrackSearcherScreen(
     val viewModelScope = rememberCoroutineScope()
     val searchState by viewModel.searchState.collectAsState()
     val tracksState by viewModel.tracksState.collectAsState()
+    val searchString by viewModel.searchString.collectAsState()
 
     TrackSearcherScreenBody(
         tracks = tracksState.values.toList(),
+        onSearchStringChange = {
+            viewModel.updateSearchString(it)
+        },
         onSearchForTracks = {
             viewModelScope.launch {
-                viewModel.searchForTrackByTitle(it)
+                viewModel.searchForTracks()
             }
         },
         onAddClicked = {
@@ -101,6 +106,7 @@ fun TrackSearcherScreen(
             }
         },
         searchState = searchState,
+        searchString = searchString,
         modifier = Modifier.fillMaxSize()
     )
 }
@@ -109,7 +115,9 @@ fun TrackSearcherScreen(
 private fun TrackSearcherScreenBody(
     tracks: List<SpotifyTrackUiState>?,
     searchState: SearchState,
-    onSearchForTracks: (String) -> Unit,
+    searchString: String,
+    onSearchStringChange: (String) -> Unit,
+    onSearchForTracks: () -> Unit,
     onAddClicked: (SpotifyTrackUiState) -> Unit,
     onRemoveClicked: (SpotifyTrackUiState) -> Unit,
     onFailureMessage: (SpotifyTrackUiState) -> Unit,
@@ -124,7 +132,9 @@ private fun TrackSearcherScreenBody(
         modifier = modifier
     ) {
         TrackSearchBar(
-            onSearchForTracks = { onSearchForTracks(it) },
+            searchString = searchString,
+            onSearchStringChange = { onSearchStringChange(it) },
+            onSearchForTracks = { onSearchForTracks() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.padding_medium))
@@ -238,15 +248,17 @@ private fun TrackTitleAndArtistCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TrackSearchBar(
-    onSearchForTracks: (String) -> Unit,
+    searchString: String,
+    onSearchStringChange: (String) -> Unit,
+    onSearchForTracks: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var searchString by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
 
     OutlinedTextField(
         value = searchString,
-        onValueChange = { searchString = it },
+        onValueChange = { onSearchStringChange(it) },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Rounded.Search,
@@ -260,12 +272,18 @@ private fun TrackSearchBar(
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = {
             if (searchString.isNotBlank()) {
-                onSearchForTracks(searchString)
+                onSearchForTracks()
             }
             focusManager.clearFocus()
         }),
-        modifier = modifier
+        modifier = modifier.focusRequester(focusRequester)
     )
+
+    LaunchedEffect(Unit) {
+        if (searchString.isBlank()) {
+            focusRequester.requestFocus()
+        }
+    }
 }
 
 @Composable
