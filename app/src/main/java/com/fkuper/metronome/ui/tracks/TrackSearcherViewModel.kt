@@ -34,6 +34,7 @@ class TrackSearcherViewModel(private val tracksRepository: TracksRepository) : V
                 val searchResultMap = searchResult.tracks.items
                     .associateBy({ it.id }, { SpotifyTrackUiState(it) })
 
+                _tracksState.value.clear()
                 _tracksState.value.putAll(searchResultMap)
                 _tracksState.value.forEach {
                     _tracksState.value[it.key] =
