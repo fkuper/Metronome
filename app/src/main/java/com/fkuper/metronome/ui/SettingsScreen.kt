@@ -130,6 +130,7 @@ private fun SettingsScreenBody(
 private fun InfoSection() {
     val uriHandler = LocalUriHandler.current
     val authorMail = stringResource(id = R.string.author_email_uri)
+    val githubUrl = stringResource(id = R.string.github_url)
     val iconCredit = stringResource(id = R.string.flaticon_pentagram_icons_uri)
 
     Column(modifier = Modifier
@@ -142,7 +143,13 @@ private fun InfoSection() {
             onClick = { uriHandler.openUri(authorMail) },
             modifier = Modifier.fillMaxWidth()
         )
-        // TODO: add link to code repo after publishing it here
+        Spacer(modifier = Modifier.height(20.dp))
+        InfoSectionItem(
+            title = "Source Code",
+            body = "github.com/fkuper/Metronome",
+            onClick = { uriHandler.openUri(githubUrl) },
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(20.dp))
         InfoSectionItem(
             title = "Note Icons Credit",

@@ -46,5 +46,6 @@
     <string name="remove_track_from_playlist">Remove this track from your playlist</string>
 
     <string name="author_email_uri">mailto:frederikkuper@gmail.com</string>
+    <string name="github_url">https://github.com/fkuper/Metronome</string>
     <string name="flaticon_pentagram_icons_uri">https://www.flaticon.com/free-icons/pentagram</string>
 </resources>
