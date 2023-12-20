@@ -2,7 +2,13 @@
 
 This project implements a native metronome application for Android using Jetpack Compose.
 
-It was created as part of the [Mobile Platforms](https://www.oru.se/english/study/exchange-studies/courses-for-exchange-students/course/mobile-platforms-dt521a) course at the [Örebro Univerity](https://www.oru.se/english/).
+It was created as part of the [Mobile Platforms](https://www.oru.se/english/study/exchange-studies/courses-for-exchange-students/course/mobile-platforms-dt521a) course at the [Örebro University](https://www.oru.se/english/).
+
+## Screenshots
+<img src="https://github.com/fkuper/Metronome/assets/43927191/358d56c9-09ae-4046-980d-72da27f5c352" width="24%">
+<img src="https://github.com/fkuper/Metronome/assets/43927191/96ed49f6-df26-4d85-a993-8dc6dae8c79a" width="24%">
+<img src="https://github.com/fkuper/Metronome/assets/43927191/873285e2-449f-4c47-967a-f763a23996ac" width="24%">
+<img src="https://github.com/fkuper/Metronome/assets/43927191/e60a96df-69d3-4892-84fa-c9212d481fe0" width="24%">
 
 ## Building the app
 
