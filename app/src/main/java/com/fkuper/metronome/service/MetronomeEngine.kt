@@ -140,7 +140,7 @@ class MetronomeEngine(
 
         val audioFormat = AudioFormat.Builder()
             .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
-            .setSampleRate(48000)
+            .setSampleRate(SAMPLE_RATE_IN_HZ)
             .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
             .build()
 
